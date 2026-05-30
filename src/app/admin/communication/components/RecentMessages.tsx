@@ -39,13 +39,13 @@ export default function RecentMessages() {
             Olamide James
           </p>
 
-          <p className="truncate text-sm text-gray-500">
+          <p className="truncate text-sm text-gray-600">
             Hello Admin, my project has been stuck in In-Progress...
           </p>
 
         </div>
 
-        <span className="shrink-0 text-xs text-gray-400">
+        <span className="shrink-0 text-xs text-gray-600">
           2 hours ago
         </span>
 
@@ -66,13 +66,13 @@ export default function RecentMessages() {
             Precious Samuel
           </p>
 
-          <p className="truncate text-sm text-gray-500">
+          <p className="truncate text-sm text-gray-600">
             I just wanted to share how impressed I am with the agent assigned...
           </p>
 
         </div>
 
-        <span className="shrink-0 text-xs text-gray-400">
+        <span className="shrink-0 text-xs text-gray-600">
           2 hours ago
         </span>
 

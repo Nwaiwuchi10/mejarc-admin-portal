@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   LayoutDashboard,
@@ -38,14 +38,34 @@ const navItems = [
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [admin, setAdmin] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("adminUser");
+      if (storedUser) {
+        try {
+          setAdmin(JSON.parse(storedUser));
+        } catch (e) {
+          console.error("Error parsing admin user", e);
+        }
+      }
+    }
+  }, []);
+
+  const adminName = admin ? `${admin.firstName} ${admin.lastName}` : "Admin User";
+  const firstName = admin ? admin.firstName : "Admin";
+  const initials = admin ? `${admin.firstName?.[0] || ""}${admin.lastName?.[0] || ""}` : "AD";
+
   const pageTitle =
-  pathname === "/"
-    ? "Good Morning, Roland"
-    : navItems.find((item) => pathname === item.href)?.label ||
-      navItems.find((item) => pathname.startsWith(item.href + "/"))?.label ||
-      "Dashboard";
+    pathname === "/"
+      ? `Good Morning, ${firstName}`
+      : navItems.find((item) => pathname === item.href)?.label ||
+        navItems.find((item) => pathname.startsWith(item.href + "/"))?.label ||
+        "Dashboard";
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -56,17 +76,23 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   const closeSidebar = () => setSidebarOpen(false);
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("adminUser");
+    setDropdownOpen(false);
+    router.push("/admin/login");
+  };
+
   return (
-    // <div className="flex min-h-screen bg-[#f5f6fa] font-sans relative">
     <div className="flex min-h-screen w-full max-w-full overflow-x-hidden bg-[#f5f6fa] font-sans relative">
       {/* ── Mobile Hamburger ── */}
       <button
@@ -109,9 +135,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <ul className="flex flex-col gap-1 list-none m-0 p-0">
             {navItems.map(({ label, icon: Icon, href }) => {
               const isActive =
-                href === "/"
-                  ? pathname === "/"
-                  : pathname.startsWith(href);
+                href === "/" ? pathname === "/" : pathname.startsWith(href);
 
               return (
                 <li key={label}>
@@ -121,15 +145,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     className={`
                       flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
                       no-underline transition-all duration-200 cursor-pointer whitespace-nowrap
-                      ${isActive
-                        ? "bg-[#FFC700] text-[#1a1a2e] font-semibold shadow-md shadow-yellow-400/30"
-                        : "text-gray-400 hover:bg-white/10 hover:text-white"
+                      ${
+                        isActive
+                          ? "bg-[#FFC700] text-[#1a1a2e] font-semibold shadow-md shadow-yellow-400/30"
+                          : "text-gray-300 hover:bg-white/10 hover:text-white"
                       }
                     `}
                   >
                     <Icon
                       size={18}
-                      className={`flex-shrink-0 ${isActive ? "text-[#1a1a2e]" : "text-gray-400"}`}
+                      className={`flex-shrink-0 ${isActive ? "text-[#1a1a2e]" : "text-gray-300"}`}
                     />
                     {label}
                   </Link>
@@ -145,7 +170,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <HelpCircle size={20} className="text-white" />
           </div>
           <h4 className="text-[13px] font-bold text-[#1a1a2e] m-0 mb-1">Inbox</h4>
-          <p className="text-[11px] text-gray-500 m-0 mb-3 leading-relaxed">
+          <p className="text-[11px] text-gray-600 m-0 mb-3 leading-relaxed">
             Customer queries and project issues
           </p>
           <button className="bg-[#FFC700] text-[#1a1a2e] border-none rounded-full py-2 px-4 text-[12px] font-bold w-full cursor-pointer hover:bg-[#e5b300] hover:-translate-y-0.5 transition-all duration-200">
@@ -155,7 +180,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </aside>
 
       {/* ── Main Content ── */}
-      {/* <main className="flex-1 flex flex-col min-h-screen lg:ml-[200px] bg-[#f5f6fa]"> */}
       <main className="flex-1 flex flex-col min-h-screen w-full max-w-full overflow-x-hidden lg:ml-[200px] bg-[#f5f6fa]">
         {/* ── Topbar ── */}
         <header className="flex items-center justify-between px-6 lg:px-8 py-4 bg-white border-b border-[#e8eaf0] sticky top-0 z-[100]">
@@ -166,68 +190,75 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
           <div className="flex items-center gap-3 lg:gap-4">
             {/* Bell */}
-            <div className="relative cursor-pointer text-gray-500 flex items-center">
+            <div className="relative cursor-pointer text-gray-600 flex items-center">
               <Bell size={22} />
               <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full border border-white" />
             </div>
 
             {/* User */}
             <div className="relative" ref={dropdownRef}>
-          <div
-            className="flex items-center gap-2.5 cursor-pointer"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-          >
-            <div className="w-9 h-9 rounded-full overflow-hidden bg-gradient-to-br from-[#FFC700] to-orange-400 flex items-center justify-center flex-shrink-0">
-              <span className="font-bold text-[#1a1a2e] text-sm">RE</span>
-            </div>
-            <div className="hidden sm:flex flex-col leading-tight">
-              <span className="text-sm font-semibold text-[#1a1a2e]">Roland Emm...</span>
-              <span className="text-[11px] text-gray-500">Admin</span>
-            </div>
-            <ChevronDown size={15} className="text-gray-400 hidden sm:block" />
-          </div>
-          {/* Dropdown */}
-          {dropdownOpen && (
-            <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-[300]">
-              <ul className="py-1">
-                <li>
-                  <Link
-                    href="/admin/settings"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={() => setDropdownOpen(false)}
-                  >
-                    View Profile
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/admin/settings"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={() => setDropdownOpen(false)}
-                  >
-                    Settings
-                  </Link>
-                </li>
-                <li>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={() => {
-                      // Handle Logout
-                      setDropdownOpen(false);
-                    }}
-                  >
-                    Logout
-                  </button>
-                </li>
-              </ul>
-            </div>
-          )}
+              <div
+                className="flex items-center gap-2.5 cursor-pointer"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+              >
+                <div className="w-9 h-9 rounded-full overflow-hidden bg-gradient-to-br from-[#FFC700] to-orange-400 flex items-center justify-center flex-shrink-0">
+                  <span className="font-bold text-[#1a1a2e] text-sm">{initials}</span>
+                </div>
+                <div className="hidden sm:flex flex-col leading-tight">
+                  <span className="text-sm font-semibold text-[#1a1a2e] max-w-[120px] truncate">
+                    {adminName}
+                  </span>
+                  <span className="text-[11px] text-gray-600 uppercase font-bold tracking-tight">
+                    {admin?.role || "Admin"}
+                  </span>
+                </div>
+                <ChevronDown size={15} className="text-gray-600 hidden sm:block" />
+              </div>
+
+              {/* Dropdown */}
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-3 w-56 bg-white border border-gray-100 rounded-2xl shadow-xl z-[300] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                  <div className="px-5 py-4 bg-gray-50/50 border-b border-gray-100 sm:hidden">
+                    <p className="text-sm font-bold text-[#1a1a2e] truncate">{adminName}</p>
+                    <p className="text-xs text-gray-600 uppercase tracking-wider mt-0.5">
+                      {admin?.role || "Admin"}
+                    </p>
+                  </div>
+                  <ul className="py-2 list-none m-0 p-0">
+                    <li>
+                      <Link
+                        href="/admin/settings"
+                        className="flex items-center px-5 py-2.5 text-sm text-[#1a1a2e] hover:bg-gray-50 transition-colors no-underline"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        View Profile
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/admin/settings"
+                        className="flex items-center px-5 py-2.5 text-sm text-[#1a1a2e] hover:bg-gray-50 transition-colors no-underline"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        Account Settings
+                      </Link>
+                    </li>
+                    <li className="border-t border-gray-100 mt-1 pt-1">
+                      <button
+                        className="w-full text-left flex items-center px-5 py-3 text-sm text-red-600 font-semibold hover:bg-red-50 transition-colors border-none bg-transparent cursor-pointer"
+                        onClick={handleLogout}
+                      >
+                        Log out safely
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        {/* <div className="flex-1 p-4 lg:p-6"> */}
         <div className="flex-1 w-full max-w-full overflow-x-hidden p-4 lg:p-6">
           {children}
         </div>

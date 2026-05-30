@@ -1,25 +1,29 @@
-export default function Stats() {
+interface StatsProps {
+  stats?: any;
+}
+
+export default function Stats({ stats }: StatsProps) {
   const cards = [
     {
-      title: "Total Messages Sent",
-      value: "12,450",
+      title: "Total Conversations",
+      value: stats?.total?.toLocaleString() || "12,450",
       color: "bg-yellow-100 text-yellow-600",
     },
     {
       title: "Active Conversations",
-      value: "324",
+      value: stats?.active?.toLocaleString() || "324",
       color: "bg-green-100 text-green-600",
       action: "View",
     },
     {
       title: "Unread Messages",
-      value: "42",
+      value: stats?.unreadMessages?.toLocaleString() || "42",
       color: "bg-red-100 text-red-600",
       action: "View",
     },
     {
-      title: "Broadcast Sent This Month",
-      value: "14",
+      title: "Archived",
+      value: stats?.archived?.toLocaleString() || "14",
       color: "bg-gray-200 text-gray-700",
       action: "See Message",
     },
@@ -48,7 +52,7 @@ export default function Stats() {
           "
         >
           <div>
-            <p className="text-sm text-gray-500">{card.title}</p>
+            <p className="text-sm text-gray-600">{card.title}</p>
             <h2 className="mt-1 truncate text-xl md:text-2xl font-bold text-gray-900">
               {card.value}
             </h2>
@@ -62,7 +66,7 @@ export default function Stats() {
             </div>
 
             {card.action && (
-              <span className="text-xs text-gray-500 hover:text-black cursor-pointer">
+              <span className="text-xs text-gray-600 hover:text-black cursor-pointer">
                 {card.action} →
               </span>
             )}

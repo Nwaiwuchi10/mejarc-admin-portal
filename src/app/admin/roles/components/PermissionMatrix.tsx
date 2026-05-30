@@ -26,7 +26,14 @@ const matrix: Record<Role, number[]> = {
   "Support Manager": [1, 0, 0, 0, 1, 0, 1],
 };
 
-export default function PermissionMatrix() {
+interface PermissionMatrixProps {
+  matrix?: any;
+}
+
+export default function PermissionMatrix({ matrix: propMatrix }: PermissionMatrixProps) {
+  const displayPermissions = propMatrix?.permissions || permissions;
+  const displayRoles = propMatrix?.roles || roles;
+  const displayMatrix = propMatrix?.matrix || matrix;
   return (
     <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
       <table className="w-full text-sm">
@@ -37,7 +44,7 @@ export default function PermissionMatrix() {
             <th className="text-left px-6 py-4 font-medium">
               Permission
             </th>
-            {roles.map((role) => (
+            {displayRoles.map((role: string) => (
               <th key={role} className="text-center px-6 py-4 font-medium">
                 {role}
               </th>
@@ -47,7 +54,7 @@ export default function PermissionMatrix() {
 
         {/* ===== BODY ===== */}
         <tbody>
-          {permissions.map((perm, i) => (
+          {displayPermissions.map((perm: string, i: number) => (
             <tr
               key={perm}
               className="border-t border-gray-100"
@@ -58,8 +65,8 @@ export default function PermissionMatrix() {
               </td>
 
               {/* Role Permissions */}
-              {roles.map((role) => {
-                const allowed = matrix[role][i];
+              {displayRoles.map((role: string) => {
+                const allowed = displayMatrix[role] ? displayMatrix[role][i] : 0;
 
                 return (
                   <td

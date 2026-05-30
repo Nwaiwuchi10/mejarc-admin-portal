@@ -1,48 +1,55 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import AdminLayout from "@/src/AdminScreenLayout/AdminLayout";
 import UserTabs from "@/src/app/admin/users/components/UserTabs";
 import UserFilters from "@/src/app/admin/users/components/UserFilters";
 import UserTable from "@/src/app/admin/users/components/UserTable";
-
-type User = {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  status: "Active" | "Pending" | "Disabled";
-  userType: string;
-  verification: "Verified" | "Pending" | "Failed";
-  lastLogin: string;
-};
-
-const users: User[] = [
-  { id: 1, name: "John Smith Roland", email: "john@example.com", role: "Project Manager", userType: "Customers", verification: "Verified", status: "Active", lastLogin: "Feb 6, 2026" },
-  { id: 2, name: "Sarah Johnson", email: "sarah@example.com", role: "Agent", userType: "Agents", verification: "Pending", status: "Active", lastLogin: "Jan 30, 2026" },
-  { id: 3, name: "Aisha Bello", email: "aisha@example.com", role: "Staff", userType: "Staff", verification: "Failed", status: "Disabled", lastLogin: "Feb 6, 2026" },
-];
+import { userService } from "@/src/services/userService";
+import Link from "next/link";
+import { ClipboardList } from "lucide-react";
 
 export default function UsersPage() {
   const [activeTab, setActiveTab] = useState("All Users");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [roleFilter, setRoleFilter] = useState("All");
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [meta, setMeta] = useState<any>(null);
 
-  const filteredUsers = useMemo(() => {
-    return users.filter((user) => {
-      const matchesTab =
-        activeTab === "All Users" || user.userType === activeTab;
+  useEffect(() => {
+    fetchUsers();
+  }, [activeTab, searchQuery, statusFilter, roleFilter]);
 
-      const matchesSearch =
-        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.toLowerCase());
+  const fetchUsers = async () => {
+    setLoading(true);
+    let params: any = {
+      search: searchQuery,
+      status: statusFilter === "All" ? undefined : statusFilter,
+    };
 
-      const matchesStatus =
-        statusFilter === "All" || user.status === statusFilter;
+    if (activeTab === "Customers") {
+      params.userType = "Customer";
+    } else if (activeTab === "Agents") {
+      params.userType = "Agent";
+      params.isApproved = true; // Only approved agents in the main User Management list
+    } else if (activeTab === "Staff") {
+      params.userType = "Staff";
+      if (roleFilter !== "All") params.role = roleFilter;
+    }
 
-      return matchesTab && matchesSearch && matchesStatus;
-    });
-  }, [activeTab, searchQuery, statusFilter]);
+    const res = await userService.getUsers(params);
+    
+    if (res && res.data) {
+      setUsers(res.data);
+      setMeta(res.meta);
+    } else {
+      setUsers([]);
+      setMeta(null);
+    }
+    setLoading(false);
+  };
 
   return (
     <AdminLayout>
@@ -52,8 +59,18 @@ export default function UsersPage() {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
 
           {/* Tabs (scrollable on mobile) */}
-          <div className="w-full overflow-x-auto">
-            <UserTabs activeTab={activeTab} onTabChange={setActiveTab} />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="w-full overflow-x-auto">
+              <UserTabs activeTab={activeTab} onTabChange={setActiveTab} />
+            </div>
+            
+            <Link
+              href="/admin/users/agent-applications"
+              className="flex items-center gap-2 px-4 py-2 bg-[#1a1a2e] text-white rounded-xl text-sm font-semibold hover:bg-[#2a2a4e] transition-all shadow-md shrink-0 whitespace-nowrap"
+            >
+              <ClipboardList size={18} className="text-[#FFC700]" />
+              KYC Applications
+            </Link>
           </div>
 
           {/* Filters */}
@@ -61,15 +78,24 @@ export default function UsersPage() {
             <UserFilters
               searchQuery={searchQuery}
               statusFilter={statusFilter}
+              roleFilter={roleFilter}
+              showRoleFilter={activeTab === "Staff"}
               onSearchChange={setSearchQuery}
               onStatusChange={setStatusFilter}
+              onRoleChange={setRoleFilter}
             />
           </div>
 
         </div>
 
         {/* Table */}
-        <UserTable users={filteredUsers} />
+        {loading ? (
+          <div className="flex items-center justify-center p-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+          </div>
+        ) : (
+          <UserTable users={users} />
+        )}
 
       </div>
     </AdminLayout>

@@ -1,12 +1,20 @@
-import React from 'react'
-import AdminDashboard from '../AdminDashboard/AdminDashboard'
+"use client";
 
-const page = () => {
-  return (
-    <div>
-      <AdminDashboard />
-    </div>
-  )
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import AdminDashboard from "../AdminDashboard/AdminDashboard";
+
+export default function Page() {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        router.push("/admin/login");
+      }
+    }
+  }, [router]);
+
+  return <AdminDashboard />;
 }
-
-export default page

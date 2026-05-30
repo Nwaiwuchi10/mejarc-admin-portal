@@ -29,8 +29,8 @@ export default function StatCard({ title, value, change }: StatCardProps) {
         <div className="bg-white rounded-2xl p-5 flex flex-col gap-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200">
             {/* Header */}
             <div className="flex items-center justify-between">
-                <span className="text-[13px] text-gray-500 font-medium leading-tight">{title}</span>
-                <button className="flex items-center gap-1 text-[12px] text-gray-500 bg-[#FFF8E7] px-2.5 py-1 rounded-full font-medium hover:bg-yellow-100 transition-colors duration-150 cursor-pointer">
+                <span className="text-[13px] text-gray-600 font-medium leading-tight">{title}</span>
+                <button className="flex items-center gap-1 text-[12px] text-gray-600 bg-[#FFF8E7] px-2.5 py-1 rounded-full font-medium hover:bg-yellow-100 transition-colors duration-150 cursor-pointer">
                     View <Eye size={12} className="text-[#FFC700]" />
                 </button>
             </div>

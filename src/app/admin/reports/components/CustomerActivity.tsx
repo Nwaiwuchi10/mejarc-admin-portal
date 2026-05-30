@@ -1,11 +1,15 @@
 import {  useState } from "react";
 
-export default function CustomerActivity() {
+interface CustomerActivityProps {
+  activity?: any[];
+}
+
+export default function CustomerActivity({ activity }: CustomerActivityProps) {
   const [showFilter, setShowFilter] = useState(false);
 
   const items = [
     { title: "Total Active Customers", value: "4598" },
-    { title: "New Customers", value: "91" },
+    { title: "New Customers", value: activity?.length.toString() || "91" },
     { title: "Returning Customers", value: "12" },
     { title: "Projects Created", value: "76" },
   ];
@@ -27,7 +31,7 @@ export default function CustomerActivity() {
         <div className="absolute right-0 md:right-5 top-12 w-[90vw] max-w-64 bg-white rounded-xl shadow-lg border border-gray-200 p-4 space-y-3 z-50">
           
           {/* Dates */}
-          <div className="flex justify-between text-xs text-gray-500">
+          <div className="flex justify-between text-xs text-gray-600">
             <span>Start Date</span>
             <span>End Date</span>
           </div>
@@ -65,7 +69,7 @@ export default function CustomerActivity() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 py-4">
         {items.map((item, i) => (
           <div key={i} className="bg-gray-100 p-4 rounded-lg text-center">
-            <p className="text-sm text-gray-500">{item.title}</p>
+            <p className="text-sm text-gray-600">{item.title}</p>
             <h2 className="text-xl font-bold mt-2">{item.value}</h2>
           </div>
         ))}

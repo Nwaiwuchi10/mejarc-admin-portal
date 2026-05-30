@@ -1,20 +1,24 @@
-export default function ProfileHeader() {
+interface ProfileHeaderProps {
+  profile?: any;
+}
+
+export default function ProfileHeader({ profile }: ProfileHeaderProps) {
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
       <div className="flex items-center gap-4">
         <img
-          src="https://i.pravatar.cc/100"
-          className="w-16 h-16 rounded-full border"
+          src={profile?.profilePicture || "https://i.pravatar.cc/100"}
+          className="w-16 h-16 rounded-full border object-cover"
         />
 
         <div>
           <h2 className="text-xl font-bold text-gray-900">
-            Roland Emmanuel
+            {profile ? `${profile.firstName} ${profile.lastName}` : "Roland Emmanuel"}
           </h2>
-          <p className="text-sm text-gray-600">Super Admin</p>
-          <p className="text-xs text-gray-400">
-            Shapati Ibeju Lekki Lagos
+          <p className="text-sm text-gray-600">{profile?.adminRole || "Super Admin"}</p>
+          <p className="text-xs text-gray-600">
+            {profile?.address || "Shapati Ibeju Lekki Lagos"}
           </p>
         </div>
       </div>

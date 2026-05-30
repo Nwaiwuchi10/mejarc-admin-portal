@@ -27,7 +27,7 @@ export default function MarketTabs({
               ${
                 activeTab === tab
                   ? "bg-[#FFC700] text-[#1a1a2e]"
-                  : "bg-white text-gray-500 hover:text-[#1a1a2e] shadow-sm"
+                  : "bg-white text-gray-600 hover:text-[#1a1a2e] shadow-sm"
               }
             `}
           >

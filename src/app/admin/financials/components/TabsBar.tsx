@@ -30,7 +30,7 @@ export default function TabsBar({
                 ${
                   isActive
                     ? "bg-[#FFC700] text-[#1a1a2e] shadow-md shadow-yellow-400/30"
-                    : "bg-white text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
+                    : "bg-white text-gray-600 hover:bg-gray-100 hover:text-[#1a1a2e]"
                 }
               `}
             >

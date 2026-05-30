@@ -3,16 +3,34 @@
 import React from "react";
 import StatCard from "./StatCard";
 
-/* ── Data ──────────────────────────────────────────────────────────────── */
-const stats = [
-    { title: "Total Wallet Balance", value: "₦40,000,000", change: "5.2% Last week" },
-    { title: "Active Agents", value: "17", change: "25.2% Last week" },
-    { title: "Ongoing Projects", value: "42", change: "25.2% Last week" },
-    { title: "Pending Projects", value: "4", change: "25.2% Last week" },
-];
+interface StatsRowProps {
+  summary?: any;
+}
 
-/* ── Component ─────────────────────────────────────────────────────────── */
-export default function StatsRow() {
+export default function StatsRow({ summary }: StatsRowProps) {
+    const stats = [
+        { 
+          title: "Total Revenue", 
+          value: summary ? `₦${summary.totalRevenue?.toLocaleString()}` : "₦0", 
+          change: "Total platform revenue" 
+        },
+        { 
+          title: "Total Users", 
+          value: summary?.totalUsers?.toString() || "0", 
+          change: "Registered users" 
+        },
+        { 
+          title: "Active Agents", 
+          value: summary?.totalAgents?.toString() || "0", 
+          change: "Verified agents" 
+        },
+        { 
+          title: "Total Products", 
+          value: summary?.totalProducts?.toString() || "0", 
+          change: "Marketplace listings" 
+        },
+    ];
+
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             {stats.map((s) => (

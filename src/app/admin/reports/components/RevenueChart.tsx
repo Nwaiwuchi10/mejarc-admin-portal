@@ -2,16 +2,20 @@
 
 import { useState } from "react";
 
-export default function RevenueChart() {
-  const data = [
-    { month: "JAN", value: 3 },
-    { month: "FEB", value: 15 },
-    { month: "MAR", value: 35 },
-    { month: "APR", value: 0.5 },
-    { month: "MAY", value: 0.5 },
+interface RevenueChartProps {
+  data?: any[];
+}
+
+export default function RevenueChart({ data: propData }: RevenueChartProps) {
+  const chartData = propData && propData.length > 0 ? propData : [
+    { month: "JAN", revenue: 3000000 },
+    { month: "FEB", revenue: 15000000 },
+    { month: "MAR", revenue: 35000000 },
+    { month: "APR", revenue: 500000 },
+    { month: "MAY", revenue: 500000 },
   ];
 
-  const maxValue = 35;
+  const maxValue = Math.max(...chartData.map(item => item.revenue || item.value || 0), 35000000);
 
   const [showFilter, setShowFilter] = useState(false);
 
@@ -26,7 +30,7 @@ export default function RevenueChart() {
             Revenue Analytics
           </h3>
 
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-gray-600">
             Revenue trends across recent months
           </p>
         </div>
@@ -69,7 +73,7 @@ export default function RevenueChart() {
           "
         >
 
-          <div className="mb-2 flex justify-between text-xs text-gray-500">
+          <div className="mb-2 flex justify-between text-xs text-gray-600">
             <span>Start Date</span>
             <span>End Date</span>
           </div>
@@ -146,7 +150,7 @@ export default function RevenueChart() {
             pb-8
             text-xs
             font-medium
-            text-gray-400
+            text-gray-600
           ">
             <span>35M</span>
             <span>25M</span>
@@ -172,10 +176,11 @@ export default function RevenueChart() {
             px-4
             pb-8
           ">
-            {data.map((item) => {
+            {chartData.map((item: any) => {
               const chartHeight = 220;
+              const val = item.revenue || item.value || 0;
               const heightPx =
-                (item.value / maxValue) * chartHeight;
+                (val / maxValue) * chartHeight;
 
               const finalHeight = Math.max(heightPx, 8);
 
@@ -215,7 +220,7 @@ export default function RevenueChart() {
                   <span className="
                     text-xs
                     font-medium
-                    text-gray-500
+                    text-gray-600
                   ">
                     {item.month}
                   </span>

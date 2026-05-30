@@ -47,7 +47,20 @@ const data: Conversation[] = [
   },
 ];
 
-export default function ConversationsTable() {
+interface ConversationsTableProps {
+  conversations?: any[];
+}
+
+export default function ConversationsTable({ conversations: propConversations }: ConversationsTableProps) {
+  const displayData = propConversations && propConversations.length > 0 ? propConversations.map(c => ({
+    id: c.id,
+    name: c.name || `User ${c.id.substring(0, 5)}`,
+    type: c.type || "Customer",
+    team: c.team || "General Support",
+    message: c.lastMessage || "No messages yet",
+    status: c.status || "Active",
+    activity: c.updatedAt ? new Date(c.updatedAt).toLocaleString() : "N/A"
+  })) : data;
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
       <div className="overflow-x-auto">
@@ -57,7 +70,7 @@ export default function ConversationsTable() {
           <thead className="bg-[#1a1a2e] text-white">
             <tr>
               <th className="px-6 py-4 text-left font-medium">
-                Conversation ID
+                No.
               </th>
 
               <th className="px-6 py-4 text-left font-medium">
@@ -92,7 +105,7 @@ export default function ConversationsTable() {
 
           {/* Body */}
           <tbody>
-            {data.map((c, i) => (
+            {displayData.map((c: any, i: number) => (
               <tr
                 key={c.id}
                 className={`border-b border-gray-100 transition hover:bg-gray-50 ${
@@ -100,7 +113,7 @@ export default function ConversationsTable() {
                 }`}
               >
                 <td className="px-6 py-5 font-semibold text-[#1a1a2e]">
-                  {c.id}
+                  {i + 1}
                 </td>
 
                 <td className="px-6 py-5 font-medium text-[#1a1a2e]">
@@ -169,7 +182,7 @@ function MoreMenu({ id }: { id: string }) {
       {/* Trigger */}
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-10 w-10 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-200 hover:text-black"
+        className="flex h-10 w-10 items-center justify-center rounded-full text-gray-600 transition hover:bg-gray-200 hover:text-black"
       >
         <MoreHorizontal size={18} />
       </button>

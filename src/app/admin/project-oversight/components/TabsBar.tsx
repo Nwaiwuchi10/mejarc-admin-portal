@@ -52,7 +52,7 @@ export default function TabsBar({
             className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
               activeTab === tab
                 ? "bg-[#FFC700] text-[#1a1a2e]"
-                : "bg-white text-gray-500 shadow-sm hover:text-[#1a1a2e]"
+                : "bg-white text-gray-600 shadow-sm hover:text-[#1a1a2e]"
             }`}
           >
             {tab}
@@ -65,7 +65,7 @@ export default function TabsBar({
 
         {/* Search */}
         <div className="relative w-full sm:w-[260px] lg:w-[300px]">
-          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600" />
           <input
             type="text"
             value={search}
@@ -95,7 +95,7 @@ export default function TabsBar({
                   onClick={() => setIsFilterOpen(false)}
                   className="p-1 rounded-full hover:bg-gray-100"
                 >
-                  <X size={16} className="text-gray-500" />
+                  <X size={16} className="text-gray-600" />
                 </button>
               </div>
 
@@ -104,7 +104,7 @@ export default function TabsBar({
 
                 {/* Purchase */}
                 <div>
-                  <label className="block mb-1 text-[10px] uppercase tracking-wider text-gray-400">
+                  <label className="block mb-1 text-[10px] uppercase tracking-wider text-gray-600">
                     Purchase Type
                   </label>
                   <select
@@ -120,7 +120,7 @@ export default function TabsBar({
 
                 {/* Plan */}
                 <div>
-                  <label className="block mb-1 text-[10px] uppercase tracking-wider text-gray-400">
+                  <label className="block mb-1 text-[10px] uppercase tracking-wider text-gray-600">
                     Plan Type
                   </label>
                   <select
@@ -137,7 +137,7 @@ export default function TabsBar({
 
                 {/* Status */}
                 <div>
-                  <label className="block mb-1 text-[10px] uppercase tracking-wider text-gray-400">
+                  <label className="block mb-1 text-[10px] uppercase tracking-wider text-gray-600">
                     Project Status
                   </label>
                   <select
@@ -166,7 +166,7 @@ export default function TabsBar({
                       setProjectStatus("All Status");
                       setStatus("All");
                     }}
-                    className="text-sm font-semibold text-gray-500 hover:text-gray-700"
+                    className="text-sm font-semibold text-gray-600 hover:text-gray-700"
                   >
                     Reset
                   </button>

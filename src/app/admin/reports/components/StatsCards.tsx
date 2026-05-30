@@ -1,9 +1,13 @@
-export default function StatsCards() {
+interface StatsCardsProps {
+  summary?: any;
+}
+
+export default function StatsCards({ summary }: StatsCardsProps) {
   const cards = [
-    { title: "Total Revenue", value: "₦11,210,500" },
-    { title: "Customer Payments", value: "₦8,200,000" },
-    { title: "Agent Payouts", value: "₦1,385,700" },
-    { title: "Platform Commission", value: "₦85,700" },
+    { title: "Total Revenue", value: summary ? `₦${summary.totalRevenue?.toLocaleString()}` : "₦0" },
+    { title: "Customer Payments", value: summary ? `₦${summary.customerPayments?.toLocaleString()}` : "₦0" },
+    { title: "Agent Payouts", value: summary ? `₦${summary.agentPayouts?.toLocaleString()}` : "₦0" },
+    { title: "Platform Commission", value: summary ? `₦${summary.platformCommission?.toLocaleString()}` : "₦0" },
   ];
 
   return (
@@ -26,7 +30,7 @@ export default function StatsCards() {
               hover:shadow-md
             "
           >
-            <p className="text-sm font-medium text-gray-500">
+            <p className="text-sm font-medium text-gray-600">
               {card.title}
             </p>
 
@@ -46,7 +50,7 @@ export default function StatsCards() {
                 +25.2%
               </span>
 
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-gray-600">
                 vs last week
               </span>
             </div>

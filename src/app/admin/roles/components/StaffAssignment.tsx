@@ -29,7 +29,36 @@ const staffData = [
   },
 ];
 
-export default function StaffAssignment() {
+interface StaffAssignmentProps {
+  staff?: any[];
+}
+
+export default function StaffAssignment({ staff }: StaffAssignmentProps) {
+  const displayData = staff && staff.length > 0 ? staff.map(s => ({
+    name: s.name,
+    role: s.role,
+    dept: s.department || "N/A",
+    email: s.email,
+    status: s.isActive ? "Active" : "Inactive",
+    lastLogin: s.lastLogin || "N/A"
+  })) : [
+    {
+      name: "Sarah Johnson",
+      role: "Project Manager",
+      dept: "Operations",
+      email: "sarah@mejarc.com",
+      status: "Active",
+      lastLogin: "2 hrs ago",
+    },
+    {
+      name: "David Williams",
+      role: "Finance Manager",
+      dept: "Finance",
+      email: "david@mejarc.com",
+      status: "Active",
+      lastLogin: "1 day ago",
+    }
+  ];
   return (
     <div className="space-y-5">
 
@@ -56,7 +85,7 @@ export default function StaffAssignment() {
 
         {/* Rows */}
         <div className="divide-y">
-          {staffData.map((staff, index) => (
+          {displayData.map((staff, index) => (
             <StaffRow key={index} staff={staff} />
           ))}
         </div>

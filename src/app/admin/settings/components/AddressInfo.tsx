@@ -1,6 +1,11 @@
 import { InfoRow } from "./InfoRow";
 
-export default function AddressInfo() {
+interface AddressInfoProps {
+  profile?: any;
+  onUpdate?: () => void;
+}
+
+export default function AddressInfo({ profile }: AddressInfoProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 space-y-4">
       
@@ -9,10 +14,10 @@ export default function AddressInfo() {
       </h3>
 
       <div className="divide-y">
-        <InfoRow label="Country" value="Nigeria" />
-        <InfoRow label="City" value="Lagos" />
-        <InfoRow label="State" value="100001" />
-        <InfoRow label="Postal Code" value="100001" />
+        <InfoRow label="Country" value={profile?.country || "Nigeria"} />
+        <InfoRow label="City" value={profile?.city || "Lagos"} />
+        <InfoRow label="State" value={profile?.state || "Lagos"} />
+        <InfoRow label="Postal Code" value={profile?.postalCode || "100001"} />
       </div>
     </div>
   );

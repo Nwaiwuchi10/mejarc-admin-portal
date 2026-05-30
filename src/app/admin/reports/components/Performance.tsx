@@ -2,227 +2,94 @@
 
 import { useState } from "react";
 
-export default function Performance() {
+interface PerformanceProps {
+  data?: any;
+}
+
+export default function Performance({ data }: PerformanceProps) {
   const [showFilter, setShowFilter] = useState(false);
+
+  // { total, completed, inProgress, disputed, cancelled, completionRate }
+  const total = data?.total || 1;
+  const completedPct = Math.round(((data?.completed || 0) / total) * 100);
+  const inProgressPct = Math.round(((data?.inProgress || 0) / total) * 100);
+  const disputedPct = Math.round(((data?.disputed || 0) / total) * 100);
+  const cancelledPct = Math.round(((data?.cancelled || 0) / total) * 100);
 
   const stats = [
     {
       label: "Completed",
-      value: 178,
+      value: data?.completed || 0,
       color: "text-purple-600",
+      bg: "bg-purple-100",
+      pct: completedPct
     },
     {
       label: "In Progress",
-      value: 92,
+      value: data?.inProgress || 0,
       color: "text-green-600",
+      bg: "bg-green-100",
+      pct: inProgressPct
     },
     {
       label: "Disputed",
-      value: 2,
+      value: data?.disputed || 0,
       color: "text-yellow-600",
+      bg: "bg-yellow-100",
+      pct: disputedPct
     },
     {
       label: "Cancelled",
-      value: 7,
+      value: data?.cancelled || 0,
       color: "text-red-500",
+      bg: "bg-red-100",
+      pct: cancelledPct
     },
   ];
 
   return (
-    <div className="bg-white p-5 rounded-xl shadow-sm space-y-4 relative overflow-hidden">
+    <div className="bg-white p-5 rounded-xl shadow-sm space-y-4 relative overflow-hidden h-full">
 
       {/* HEADER */}
       <div className="mb-6 flex items-center justify-between gap-3">
-
         <div>
           <h3 className="text-base font-semibold text-[#1a1a2e]">
             Project Performance
           </h3>
-
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-gray-600">
             Overview of delivery metrics
           </p>
         </div>
 
         <button
           onClick={() => setShowFilter((prev) => !prev)}
-          className="
-            rounded-lg
-            bg-gray-100
-            px-3
-            py-2
-            text-xs
-            font-medium
-            text-[#1a1a2e]
-            transition
-            hover:bg-gray-200
-          "
+          className="rounded-lg bg-gray-100 px-3 py-2 text-xs font-medium text-[#1a1a2e] transition hover:bg-gray-200"
         >
-          This Month
+          Dynamic Analysis
         </button>
-
       </div>
 
-      {/* FILTER POPUP */}
-      {showFilter && (
-        <div
-          className="
-            absolute
-            right-0
-            top-14
-            z-50
-            w-[280px]
-            max-w-[90vw]
-            rounded-2xl
-            border
-            border-gray-200
-            bg-white
-            p-4
-            shadow-xl
-          "
-        >
-
-          {/* DATE LABELS */}
-          <div className="mb-2 flex justify-between text-xs text-gray-500">
-            <span>Start Date</span>
-            <span>End Date</span>
-          </div>
-
-          {/* INPUTS */}
-          <div className="mb-4 flex gap-2">
-            <input
-              type="text"
-              placeholder="25.09.2025"
-              className="
-                w-1/2
-                rounded-lg
-                border
-                border-gray-200
-                bg-gray-50
-                px-3
-                py-2
-                text-sm
-                outline-none
-                focus:border-yellow-400
-              "
-            />
-
-            <input
-              type="text"
-              placeholder="15.11.2025"
-              className="
-                w-1/2
-                rounded-lg
-                border
-                border-gray-200
-                bg-gray-50
-                px-3
-                py-2
-                text-sm
-                outline-none
-                focus:border-yellow-400
-              "
-            />
-          </div>
-
-          {/* QUICK FILTERS */}
-          <div className="space-y-2">
-            {["Today", "Yesterday", "This Month", "Last Month"].map(
-              (item) => (
-                <button
-                  key={item}
-                  className={`
-                    w-full
-                    rounded-lg
-                    py-2.5
-                    text-sm
-                    font-medium
-                    transition
-                    ${
-                      item === "This Month"
-                        ? "bg-[#1a1a2e] text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }
-                  `}
-                >
-                  {item}
-                </button>
-              )
-            )}
-          </div>
-
-        </div>
-      )}
-
       {/* CIRCLES */}
-      <div className="flex flex-wrap items-end justify-center gap-5">
-
-        <div className="
-          flex h-32 w-32 items-center justify-center
-          rounded-full
-          bg-purple-100
-          text-3xl
-          font-bold
-          text-purple-600
-        ">
-          64%
-        </div>
-
-        <div className="
-          flex h-24 w-24 items-center justify-center
-          rounded-full
-          bg-green-100
-          text-xl
-          font-bold
-          text-green-600
-        ">
-          53%
-        </div>
-
-        <div className="
-          flex h-20 w-20 items-center justify-center
-          rounded-full
-          bg-red-100
-          text-lg
-          font-bold
-          text-red-500
-        ">
-          40%
-        </div>
-
-        <div className="
-          flex h-16 w-16 items-center justify-center
-          rounded-full
-          bg-yellow-100
-          text-sm
-          font-bold
-          text-yellow-600
-        ">
-          8%
-        </div>
-
+      <div className="flex flex-wrap items-end justify-center gap-5 py-4">
+        {stats.map((s, i) => (
+            <div key={i} 
+                className={`flex items-center justify-center rounded-full font-bold shadow-sm transition-all duration-1000 ${s.bg} ${s.color} ${
+                    i === 0 ? "h-32 w-32 text-3xl" : 
+                    i === 1 ? "h-24 w-24 text-xl" : 
+                    i === 2 ? "h-20 w-20 text-lg" : "h-16 w-16 text-sm"
+                }`}
+            >
+                {s.pct}%
+            </div>
+        ))}
       </div>
 
       {/* STATS */}
-      <div className="
-        mt-8
-        grid
-        grid-cols-2
-        gap-4
-        border-t
-        border-gray-100
-        pt-5
-      ">
+      <div className="mt-8 grid grid-cols-2 gap-4 border-t border-gray-100 pt-5">
         {stats.map((item) => (
           <div key={item.label} className="flex items-center gap-2">
-            <span className={`text-sm ${item.color}`}>
-              ●
-            </span>
-
-            <span className="text-sm text-gray-500">
-              {item.label}
-            </span>
-
+            <span className={`text-sm ${item.color}`}>●</span>
+            <span className="text-sm text-gray-600">{item.label}</span>
             <span className="ml-auto text-sm font-semibold text-[#1a1a2e]">
               {item.value}
             </span>

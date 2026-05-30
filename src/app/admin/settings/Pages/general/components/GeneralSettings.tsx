@@ -16,7 +16,7 @@ export default function GeneralSettings() {
 
         {/* Language */}
         <div className="flex items-center justify-between py-4">
-          <p className="text-sm text-gray-500">Default Language</p>
+          <p className="text-sm text-gray-600">Default Language</p>
 
           <select className="text-sm border border-gray-200 rounded-lg px-3 py-1 bg-gray-50 focus:outline-none">
             <option>English</option>

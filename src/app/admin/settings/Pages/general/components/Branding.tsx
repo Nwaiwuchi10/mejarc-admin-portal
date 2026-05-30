@@ -13,7 +13,7 @@ export default function Branding() {
         {/* Logo */}
         <div className="space-y-2">
           <div className="h-40 bg-gray-100 rounded-xl flex items-center justify-center">
-            <span className="font-bold text-gray-500">MEJARC</span>
+            <span className="font-bold text-gray-600">MEJARC</span>
           </div>
           <button className="w-full text-sm text-gray-900 bg-gray-100 rounded-lg py-2 hover:bg-gray-200">
             Upload logo ✏️

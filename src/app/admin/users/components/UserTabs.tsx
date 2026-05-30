@@ -17,7 +17,7 @@ export default function UserTabs({ activeTab, onTabChange }: UserTabsProps) {
           className={`capitalize pb-2 text-sm font-medium transition ${
             activeTab === tab
               ? "text-[#1a1a2e] border-b-2 border-[#FFC700]"
-              : "text-gray-400 hover:text-gray-600"
+              : "text-gray-600 hover:text-gray-600"
           }`}
         >
           {tab}
