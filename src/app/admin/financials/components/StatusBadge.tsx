@@ -11,6 +11,12 @@ const statusClasses: Record<string, string> = {
   "Partial Refund": "bg-amber-100 text-amber-700",
   "Refunded": "bg-emerald-100 text-emerald-700",
   "Cancelled": "bg-red-100 text-red-700",
+  "Transferred": "bg-emerald-100 text-emerald-700",
+  "Processing": "bg-blue-100 text-blue-700",
+  "Failed": "bg-red-100 text-red-700",
+  "Reversed": "bg-purple-100 text-purple-700",
+  "Approved": "bg-emerald-100 text-emerald-700",
+  "Rejected": "bg-red-100 text-red-700",
 };
 
 export default function StatusBadge({ status }: StatusBadgeProps) {

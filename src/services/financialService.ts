@@ -96,4 +96,34 @@ export const financialService = {
       };
     }
   },
+
+  getVendorWithdrawals: async (params: any = {}) => {
+    try {
+      const response = await Api.get("/wallet/admin/financials/reports", { 
+        params: {
+          startDate: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(),
+          endDate: new Date().toISOString(),
+          ...params
+        } 
+      });
+      return response.data;
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to fetch vendor withdrawals",
+      };
+    }
+  },
+
+  retryWithdrawal: async (id: string) => {
+    try {
+      const response = await Api.post(`/wallet/admin/withdrawals/retry/${id}`);
+      return response.data;
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to retry withdrawal",
+      };
+    }
+  }
 };

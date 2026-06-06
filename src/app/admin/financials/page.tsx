@@ -48,14 +48,23 @@ export default function Financials() {
         // Capturing refund statuses and issues
         res = await financialService.getRefunds();
         break;
+      case "Vendor Withdrawals":
+        // This endpoint returns all automated multi-vendor withdrawals
+        res = await financialService.getVendorWithdrawals();
+        break;
       default:
         res = { data: [] };
     }
     
     if (res && res.data) {
-      setData(res.data);
+      // Special handling for Vendor Withdrawals which returns a summary object
+      if (activeTab === "Vendor Withdrawals" && res.data.vendorSummary) {
+        setData(res.data.vendorSummary);
+      } else {
+        setData(res.data);
+      }
     } else if (Array.isArray(res)) {
-       setData(res);
+      setData(res);
     } else {
       setData([]);
     }

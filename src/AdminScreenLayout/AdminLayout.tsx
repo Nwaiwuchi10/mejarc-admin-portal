@@ -31,6 +31,7 @@ const navItems = [
   { label: "Project Oversight", icon: FolderKanban, href: "/admin/project-oversight" },
   { label: "Marketplace", icon: ShoppingBag, href: "/admin/marketplace" },
   { label: "Financials", icon: DollarSign, href: "/admin/financials" },
+  { label: "Financial Reports", icon: BarChart2, href: "/admin/financial" },
   { label: "Reports", icon: BarChart2, href: "/admin/reports" },
   { label: "Communication", icon: MessageCircle, href: "/admin/communication" },
   { label: "Roles & Permissions", icon: FileText, href: "/admin/roles" },

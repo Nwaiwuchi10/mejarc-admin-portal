@@ -12,6 +12,7 @@ export default function TabsBar({
     "Agent Payouts",
     "Disputed",
     "Refunds",
+    "Vendor Withdrawals",
   ];
 
   return (

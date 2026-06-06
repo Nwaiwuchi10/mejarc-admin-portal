@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MoreHorizontal } from "lucide-react";
 import StatusBadge from "./StatusBadge";
+import { financialService } from "@/src/services/financialService";
 
 interface TransactionsTableProps {
   activeTab: string;
@@ -23,6 +24,7 @@ export default function TransactionsTable({
   const isAgentPayouts = tab.includes("agent payout");
   const isDisputed = tab === "disputed";
   const isRefunds = tab === "refunds";
+  const isVendorWithdrawals = tab === "vendor withdrawals";
 
   const currentTransactions = isCustomerTransactions ? displayData.map(t => ({
     id: t.id,
@@ -66,6 +68,17 @@ export default function TransactionsTable({
     reason: r.reason || "N/A"
   })) : [];
 
+  const currentWithdrawals = isVendorWithdrawals ? (displayData as any).flatMap((v: any) => 
+    (v.withdrawals || []).map((w: any) => ({
+      id: w.id,
+      vendor: v.vendorName || "Unknown",
+      amount: `₦${Number(w.amount).toLocaleString()}`,
+      status: w.status,
+      date: new Date(w.createdAt).toLocaleDateString(),
+      reference: w.paystackReference || "N/A"
+    }))
+  ) : [];
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -79,7 +92,7 @@ export default function TransactionsTable({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const actionButton = (id: string) => (
+  const actionButton = (id: string, item?: any) => (
     <td className="p-3 relative">
       <button
         onClick={() => setOpenMenuId(openMenuId === id ? null : id)}
@@ -98,6 +111,22 @@ export default function TransactionsTable({
           >
             View Details
           </button>
+          
+          {isVendorWithdrawals && item?.status === 'Failed' && (
+            <button
+              type="button"
+              onClick={async () => {
+                setOpenMenuId(null);
+                if (confirm('Are you sure you want to retry this withdrawal?')) {
+                  await financialService.retryWithdrawal(id);
+                  window.location.reload();
+                }
+              }}
+              className="w-full px-4 py-3 text-left text-sm text-blue-600 hover:bg-gray-100 font-medium border-t border-gray-50"
+            >
+              Retry Transfer
+            </button>
+          )}
         </div>
       )}
     </td>
@@ -145,6 +174,16 @@ export default function TransactionsTable({
                   <th className="p-3 text-left">Reason</th>
                   <th className="p-3">Action</th>
                 </>
+              ) : isVendorWithdrawals ? (
+                <>
+                  <th className="p-3 text-left">No.</th>
+                  <th className="p-3 text-left">Vendor Name</th>
+                  <th className="p-3 text-left">Amount</th>
+                  <th className="p-3 text-left">Status</th>
+                  <th className="p-3 text-left">Date</th>
+                  <th className="p-3 text-left">Reference</th>
+                  <th className="p-3">Action</th>
+                </>
               ) : (
                 <>
                   <th className="p-3 text-left">No.</th>
@@ -187,7 +226,7 @@ export default function TransactionsTable({
                     <StatusBadge status={payout.status} />
                   </td>
                   <td className="p-3 text-gray-600 font-medium">{payout.date}</td>
-                  {actionButton(payout.id)}
+                  {actionButton(payout.id, payout)}
                 </tr>
               )))}
 
@@ -206,7 +245,7 @@ export default function TransactionsTable({
                     <StatusBadge status={dispute.status} />
                   </td>
                   <td className="p-3 text-gray-600 font-medium">{dispute.notes}</td>
-                  {actionButton(dispute.id)}
+                  {actionButton(dispute.id, dispute)}
                 </tr>
               )))}
 
@@ -224,7 +263,24 @@ export default function TransactionsTable({
                   </td>
                   <td className="p-3 text-gray-600 font-medium">{refund.date}</td>
                   <td className="p-3 text-gray-600 font-medium">{refund.reason}</td>
-                  {actionButton(refund.id)}
+                  {actionButton(refund.id, refund)}
+                </tr>
+              )))}
+
+            {isVendorWithdrawals && (currentWithdrawals.length === 0 ? <tr><td colSpan={7} className="p-10 text-center text-gray-600 font-medium">No withdrawals found</td></tr> :
+              currentWithdrawals.map((withdrawal: any, i: number) => (
+                <tr key={withdrawal.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-3 py-4 whitespace-nowrap font-bold text-[#1a1a2e]">
+                    {i + 1}
+                  </td>
+                  <td className="p-3 font-semibold text-[#1a1a2e]">{withdrawal.vendor}</td>
+                  <td className="p-3 text-[#1a1a2e] font-bold">{withdrawal.amount}</td>
+                  <td className="p-3">
+                    <StatusBadge status={withdrawal.status} />
+                  </td>
+                  <td className="p-3 text-gray-600 font-medium">{withdrawal.date}</td>
+                  <td className="p-3 text-gray-500 font-medium">{withdrawal.reference}</td>
+                  {actionButton(withdrawal.id, withdrawal)}
                 </tr>
               )))}
 
@@ -243,7 +299,7 @@ export default function TransactionsTable({
                   <td className="p-3">
                     <StatusBadge status={transaction.status} />
                   </td>
-                  {actionButton(transaction.id)}
+                  {actionButton(transaction.id, transaction)}
                 </tr>
               )))}
           </tbody>
