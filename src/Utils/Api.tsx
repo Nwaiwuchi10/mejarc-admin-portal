@@ -2,7 +2,8 @@
 import axios from "axios";
 
 const Api = axios.create({
-  baseURL: "https://mejarc-backend.onrender.com"
+  baseURL: `${process.env.NEXT_PUBLIC_API_BASE_URL}`
+  // "https://mejarc-backend.onrender.com"
   // `${process.env.NEXT_PUBLIC_API_BASE_URL}`,
 });
 

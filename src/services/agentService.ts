@@ -6,10 +6,7 @@ export const agentService = {
       const response = await Api.get("/admin/agents", { params });
       return response.data;
     } catch (error: any) {
-      return {
-        success: false,
-        message: error.response?.data?.message || "Failed to fetch agents",
-      };
+      return { success: false, message: error.response?.data?.message || "Failed to fetch agents" };
     }
   },
 
@@ -18,10 +15,7 @@ export const agentService = {
       const response = await Api.get(`/admin/agents/${agentId}`);
       return response.data;
     } catch (error: any) {
-      return {
-        success: false,
-        message: error.response?.data?.message || "Failed to fetch agent details",
-      };
+      return { success: false, message: error.response?.data?.message || "Failed to fetch agent details" };
     }
   },
 
@@ -30,10 +24,7 @@ export const agentService = {
       const response = await Api.post("/admin/approve-agent", { agentId });
       return response.data;
     } catch (error: any) {
-      return {
-        success: false,
-        message: error.response?.data?.message || "Failed to approve agent",
-      };
+      return { success: false, message: error.response?.data?.message || "Failed to approve agent" };
     }
   },
 
@@ -42,10 +33,7 @@ export const agentService = {
       const response = await Api.post("/admin/reject-agent", { agentId, reason });
       return response.data;
     } catch (error: any) {
-      return {
-        success: false,
-        message: error.response?.data?.message || "Failed to reject agent",
-      };
+      return { success: false, message: error.response?.data?.message || "Failed to reject agent" };
     }
   },
 
@@ -54,10 +42,7 @@ export const agentService = {
       const response = await Api.get("/admin/agents/applications", { params });
       return response.data;
     } catch (error: any) {
-      return {
-        success: false,
-        message: error.response?.data?.message || "Failed to fetch agent applications",
-      };
+      return { success: false, message: error.response?.data?.message || "Failed to fetch agent applications" };
     }
   },
 };
