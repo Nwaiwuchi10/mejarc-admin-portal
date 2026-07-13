@@ -7,17 +7,22 @@ interface RevenueChartProps {
 }
 
 export default function RevenueChart({ data: propData }: RevenueChartProps) {
-  const chartData = propData && propData.length > 0 ? propData : [
-    { month: "JAN", revenue: 3000000 },
-    { month: "FEB", revenue: 15000000 },
-    { month: "MAR", revenue: 35000000 },
-    { month: "APR", revenue: 500000 },
-    { month: "MAY", revenue: 500000 },
-  ];
+  const chartData = propData && propData.length > 0 ? propData : [];
+  
+  if (chartData.length === 0) {
+    return (
+      <div className="bg-white p-5 rounded-xl shadow-sm xl:col-span-2 relative overflow-hidden flex flex-col justify-center items-center py-20">
+        <p className="text-gray-400 font-semibold text-sm">No revenue data available</p>
+      </div>
+    );
+  }
 
-  const maxValue = Math.max(...chartData.map(item => item.revenue || item.value || 0), 35000000);
+  const maxValue = Math.max(...chartData.map(item => item.revenue || item.value || 0), 1000);
+  const intervals = Array.from({ length: 6 }, (_, i) => Math.round(maxValue - (maxValue / 5) * i));
 
   const [showFilter, setShowFilter] = useState(false);
+
+  const currentMonthLabel = new Date().toLocaleString('default', { month: 'short' }).toUpperCase();
 
   return (
     <div className="bg-white p-5 rounded-xl shadow-sm xl:col-span-2 relative overflow-hidden">
@@ -151,15 +156,15 @@ export default function RevenueChart({ data: propData }: RevenueChartProps) {
             text-xs
             font-medium
             text-gray-600
+            w-16
+            text-right
+            pr-2
           ">
-            <span>35M</span>
-            <span>25M</span>
-            <span>15M</span>
-            <span>10M</span>
-            <span>5M</span>
-            <span>1M</span>
-            <span>500K</span>
-            <span>0</span>
+            {intervals.map((val, idx) => (
+              <span key={idx}>
+                ₦{val >= 1000000 ? `${(val / 1000000).toFixed(1)}M` : val >= 1000 ? `${(val / 1000).toFixed(0)}K` : val}
+              </span>
+            ))}
           </div>
 
           {/* BARS */}
@@ -184,7 +189,7 @@ export default function RevenueChart({ data: propData }: RevenueChartProps) {
 
               const finalHeight = Math.max(heightPx, 8);
 
-              const isActive = item.month === "MAR";
+              const isActive = item.month?.toUpperCase() === currentMonthLabel;
 
               return (
                 <div

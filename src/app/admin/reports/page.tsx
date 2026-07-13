@@ -68,7 +68,7 @@ export default function Reports() {
               </div>
 
               <div className="w-full min-w-0 overflow-hidden">
-                <CustomerActivity activity={activity} />
+                <CustomerActivity activity={activity} summary={summary} />
               </div>
             </>
           )}

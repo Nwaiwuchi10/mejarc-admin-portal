@@ -1,24 +1,25 @@
-import {  useState } from "react";
+import { useState } from "react";
 
 interface CustomerActivityProps {
   activity?: any[];
+  summary?: any;
 }
 
-export default function CustomerActivity({ activity }: CustomerActivityProps) {
+export default function CustomerActivity({ activity, summary }: CustomerActivityProps) {
   const [showFilter, setShowFilter] = useState(false);
 
   const items = [
-    { title: "Total Active Customers", value: "4598" },
-    { title: "New Customers", value: activity?.length.toString() || "91" },
-    { title: "Returning Customers", value: "12" },
-    { title: "Projects Created", value: "76" },
+    { title: "Total Registered Users", value: summary?.totalUsers?.toString() || "0" },
+    { title: "Active Agents / Vendors", value: summary?.totalAgents?.toString() || "0" },
+    { title: "Total Marketplace Products", value: summary?.totalProducts?.toString() || "0" },
+    { title: "Recent Order Activity", value: activity?.length?.toString() || "0" },
   ];
 
   return (
     <div className="w-full overflow-hidden bg-white text-[#4a4a4a] p-4 md:p-5 rounded-xl shadow-sm relative">
       
       <div className="flex justify-between">
-        <h3 className="font-semibold">Customer Activity</h3>
+        <h3 className="font-semibold">Platform & Activity Metrics</h3>
         <button
           onClick={() => setShowFilter((prev) => !prev)}
           className="text-xs text-[#1a1a2e] bg-gray-100 px-3 py-1.5 rounded-md hover:bg-gray-200 transition"
@@ -70,7 +71,7 @@ export default function CustomerActivity({ activity }: CustomerActivityProps) {
         {items.map((item, i) => (
           <div key={i} className="bg-gray-100 p-4 rounded-lg text-center">
             <p className="text-sm text-gray-600">{item.title}</p>
-            <h2 className="text-xl font-bold mt-2">{item.value}</h2>
+            <h2 className="text-xl font-bold mt-2 text-[#1a1a2e]">{item.value}</h2>
           </div>
         ))}
       </div>

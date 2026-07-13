@@ -64,6 +64,10 @@ export default function MarketplacePage() {
                 listings={listings}
                 activeTab={activeTab}
                 status={status}
+                onRefresh={() => {
+                  fetchListings();
+                  fetchStats();
+                }}
               />
             )}
           </div>

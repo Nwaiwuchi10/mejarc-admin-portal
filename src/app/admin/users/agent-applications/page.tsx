@@ -17,6 +17,15 @@ export default function AgentApplicationsPage() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [toastMsg, setToastMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  // Modal and action states
+  const [actionModal, setActionModal] = useState<{
+    type: "approve" | "reject";
+    agentId: string;
+    agentName?: string;
+  } | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [actionLoading, setActionLoading] = useState(false);
+
   useEffect(() => {
     fetchApplications();
   }, [activeTab, search, businessType]);
@@ -54,30 +63,36 @@ export default function AgentApplicationsPage() {
   };
 
   const handleApprove = async (id: string) => {
-    if (confirm("Are you sure you want to approve this agent registration?")) {
-      const res = await agentService.approveAgent(id);
-      if (res && res.success !== false) {
-        showToast("success", "Agent approved successfully!");
-        setSelectedAgent(null);
-        fetchApplications();
-      } else {
-        showToast("error", res.message || "Failed to approve agent.");
-      }
+    setActionLoading(true);
+    const res = await agentService.approveAgent(id);
+    if (res && res.success !== false) {
+      showToast("success", "Agent approved successfully!");
+      setSelectedAgent(null);
+      setActionModal(null);
+      fetchApplications();
+    } else {
+      showToast("error", res.message || "Failed to approve agent.");
     }
+    setActionLoading(false);
   };
 
-  const handleReject = async (id: string) => {
-    const reason = prompt("Enter rejection reason:");
-    if (reason) {
-      const res = await agentService.rejectAgent(id, reason);
-      if (res && res.success !== false) {
-        showToast("success", "Agent application rejected.");
-        setSelectedAgent(null);
-        fetchApplications();
-      } else {
-        showToast("error", res.message || "Failed to reject agent.");
-      }
+  const handleReject = async (id: string, reason: string) => {
+    if (!reason.trim()) {
+      showToast("error", "Rejection reason is required.");
+      return;
     }
+    setActionLoading(true);
+    const res = await agentService.rejectAgent(id, reason);
+    if (res && res.success !== false) {
+      showToast("success", "Agent application rejected.");
+      setSelectedAgent(null);
+      setActionModal(null);
+      setRejectionReason("");
+      fetchApplications();
+    } else {
+      showToast("error", res.message || "Failed to reject agent.");
+    }
+    setActionLoading(false);
   };
 
   return (
@@ -218,13 +233,16 @@ export default function AgentApplicationsPage() {
                           {app.status === "Pending" && (
                             <div className="flex items-center gap-2">
                               <button
-                                onClick={() => handleApprove(app.id)}
+                                onClick={() => setActionModal({ type: "approve", agentId: app.id, agentName: app.name })}
                                 className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs font-bold hover:bg-green-700 shadow-sm transition-all"
                               >
                                 Approve
                               </button>
                               <button
-                                onClick={() => handleReject(app.id)}
+                                onClick={() => {
+                                  setRejectionReason("");
+                                  setActionModal({ type: "reject", agentId: app.id, agentName: app.name });
+                                }}
                                 className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 shadow-sm transition-all"
                               >
                                 Reject
@@ -407,13 +425,16 @@ export default function AgentApplicationsPage() {
                   selectedAgent.registrationStatus === "profile_pending" ? (
                     <>
                       <button
-                        onClick={() => handleReject(selectedAgent.id)}
+                        onClick={() => {
+                          setRejectionReason("");
+                          setActionModal({ type: "reject", agentId: selectedAgent.id, agentName: selectedAgent.name });
+                        }}
                         className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl transition-all shadow-md active:scale-95"
                       >
                         Reject Registration
                       </button>
                       <button
-                        onClick={() => handleApprove(selectedAgent.id)}
+                        onClick={() => setActionModal({ type: "approve", agentId: selectedAgent.id, agentName: selectedAgent.name })}
                         className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white font-bold text-sm rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
                       >
                         <ShieldCheck size={16} />
@@ -434,6 +455,73 @@ export default function AgentApplicationsPage() {
           </div>
         )}
       </div>
+
+      {/* Action Confirmation Modal */}
+      {actionModal && (
+        <div className="fixed inset-0 z-[250] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl p-7 w-full max-w-md mx-4 animate-in zoom-in-95 duration-200">
+            <h3 className="text-lg font-bold text-[#1a1a2e] mb-2">
+              {actionModal.type === "approve" ? "Approve Agent Registration" : "Reject Agent Registration"}
+            </h3>
+            <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+              {actionModal.type === "approve"
+                ? `Are you sure you want to approve ${actionModal.agentName || "this agent"}'s registration? They will be notified and granted access.`
+                : `Are you sure you want to reject ${actionModal.agentName || "this agent"}'s registration? Please provide a reason below.`}
+            </p>
+
+            {actionModal.type === "reject" && (
+              <div className="mb-6">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
+                  Rejection Reason
+                </label>
+                <textarea
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  placeholder="Enter rejection reason..."
+                  rows={3}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all resize-none text-gray-800 placeholder-gray-400"
+                />
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setActionModal(null);
+                  setRejectionReason("");
+                }}
+                disabled={actionLoading}
+                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-semibold text-sm hover:bg-gray-50 transition-colors disabled:opacity-55"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (actionModal.type === "approve") {
+                    handleApprove(actionModal.agentId);
+                  } else {
+                    handleReject(actionModal.agentId, rejectionReason);
+                  }
+                }}
+                disabled={actionLoading}
+                className={`flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm text-white transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-1.5 ${
+                  actionModal.type === "approve"
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-red-600 hover:bg-red-700"
+                } ${actionLoading ? "opacity-75 cursor-not-allowed" : ""}`}
+              >
+                {actionLoading ? (
+                  <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : actionModal.type === "approve" ? (
+                  "Approve"
+                ) : (
+                  "Reject"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 }

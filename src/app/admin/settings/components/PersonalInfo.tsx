@@ -14,11 +14,11 @@ export default function PersonalInfo({ profile }: PersonalInfoProps) {
       </h3>
 
       <div className="divide-y">
-        <InfoRow label="First Name" value={profile?.firstName || "Roland"} />
-        <InfoRow label="Last Name" value={profile?.lastName || "Emmanuel"} />
-        <InfoRow label="Email Address" value={profile?.email || "rolandemmanuel03@gmail.com"} />
-        <InfoRow label="Phone Number" value={profile?.phoneNumber || "234 8840 492 4922"} />
-        <InfoRow label="Bio" value={profile?.bio || "Admin User"} />
+        <InfoRow label="First Name" value={profile?.firstName || "N/A"} />
+        <InfoRow label="Last Name" value={profile?.lastName || "N/A"} />
+        <InfoRow label="Email Address" value={profile?.email || "N/A"} />
+        <InfoRow label="Phone Number" value={profile?.phoneNumber || "N/A"} />
+        <InfoRow label="Role" value={profile?.adminRole || "N/A"} />
       </div>
     </div>
   );

@@ -1,16 +1,24 @@
 interface ProfileHeaderProps {
   profile?: any;
+  onEdit?: () => void;
 }
 
-export default function ProfileHeader({ profile }: ProfileHeaderProps) {
+export default function ProfileHeader({ profile, onEdit }: ProfileHeaderProps) {
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
       <div className="flex items-center gap-4">
-        <img
-          src={profile?.profilePicture || "https://i.pravatar.cc/100"}
-          className="w-16 h-16 rounded-full border object-cover"
-        />
+        {profile?.profilePics || profile?.profilePicture ? (
+          <img
+            src={profile.profilePics || profile.profilePicture}
+            alt="Profile Picture"
+            className="w-16 h-16 rounded-full border object-cover border-gray-200"
+          />
+        ) : (
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#FFC700] to-orange-400 flex items-center justify-center text-[#1a1a2e] font-black text-xl shadow-sm">
+            {profile?.firstName?.charAt(0)?.toUpperCase() || "?"}
+          </div>
+        )}
 
         <div>
           <h2 className="text-xl font-bold text-gray-900">
@@ -23,7 +31,10 @@ export default function ProfileHeader({ profile }: ProfileHeaderProps) {
         </div>
       </div>
 
-      <button className="px-4 text-[#4a4a4a] py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-100 transition">
+      <button
+        onClick={onEdit}
+        className="px-4 text-[#4a4a4a] py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-100 transition cursor-pointer"
+      >
         Profile Change ✏️
       </button>
     </div>

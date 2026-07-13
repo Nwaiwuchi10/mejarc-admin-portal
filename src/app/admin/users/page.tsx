@@ -30,11 +30,14 @@ export default function UsersPage() {
     };
 
     if (activeTab === "Customers") {
+      params.tab = "Customers";
       params.userType = "Customer";
     } else if (activeTab === "Agents") {
+      params.tab = "Agents";
       params.userType = "Agent";
       params.isApproved = true; // Only approved agents in the main User Management list
     } else if (activeTab === "Staff") {
+      params.tab = "Staff";
       params.userType = "Staff";
       if (roleFilter !== "All") params.role = roleFilter;
     }

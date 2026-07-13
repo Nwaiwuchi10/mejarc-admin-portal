@@ -12,9 +12,7 @@ export default function StatsCards({ summary }: StatsCardsProps) {
 
   return (
     <div className="w-full max-w-full overflow-hidden">
-
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4">
-
         {cards.map((card, index) => (
           <div
             key={index}
@@ -44,21 +42,9 @@ export default function StatsCards({ summary }: StatsCardsProps) {
             ">
               {card.value}
             </h2>
-
-            <div className="mt-4 flex items-center gap-2">
-              <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
-                +25.2%
-              </span>
-
-              <span className="text-xs text-gray-600">
-                vs last week
-              </span>
-            </div>
           </div>
         ))}
-
       </div>
-
     </div>
   );
 }

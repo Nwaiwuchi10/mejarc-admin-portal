@@ -3,14 +3,15 @@ interface TopAgentProps {
 }
 
 export default function TopAgent({ agents }: TopAgentProps) {
-  const topAgent = agents && agents.length > 0 ? agents[0] : {
-    name: "Roland Emmanuel",
-    avatar: "https://i.pravatar.cc/100",
-    projectsCompleted: 21,
-    earnings: 600000,
-    rating: 4.5,
-    completionRate: "89%"
-  };
+  if (!agents || agents.length === 0) {
+    return (
+      <div className="bg-white text-[#4a4a4a] p-5 rounded-xl shadow-sm space-y-4 overflow-hidden h-full flex flex-col justify-center items-center py-10">
+        <p className="text-gray-400 font-semibold text-sm">No agent stats available</p>
+      </div>
+    );
+  }
+
+  const topAgent = agents[0];
 
   return (
     <div className="bg-white text-[#4a4a4a] p-5 rounded-xl shadow-sm space-y-4 overflow-hidden h-full">
@@ -20,12 +21,18 @@ export default function TopAgent({ agents }: TopAgentProps) {
       </div>
 
       <div className="flex flex-col items-center text-center">
-        <img
-          src={topAgent.avatar || "https://i.pravatar.cc/100"}
-          alt="Top Agent"
-          className="w-16 h-16 rounded-full object-cover"
-        />
-        <p className="mt-2 font-medium">{topAgent.name}</p>
+        {topAgent.avatar ? (
+          <img
+            src={topAgent.avatar}
+            alt="Top Agent"
+            className="w-16 h-16 rounded-full object-cover border border-gray-200"
+          />
+        ) : (
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#FFC700] to-orange-400 flex items-center justify-center text-[#1a1a2e] font-black text-xl shadow-sm">
+            {topAgent.name?.charAt(0)?.toUpperCase() || "?"}
+          </div>
+        )}
+        <p className="mt-2 font-semibold text-[#1a1a2e]">{topAgent.name}</p>
       </div>
 
       <div className="space-y-2 text-sm">

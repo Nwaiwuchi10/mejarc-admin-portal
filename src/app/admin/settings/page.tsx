@@ -5,12 +5,14 @@ import Sidebar from "./components/Sidebar";
 import ProfileHeader from "./components/ProfileHeader";
 import PersonalInfo from "./components/PersonalInfo";
 import AddressInfo from "./components/AddressInfo";
+import EditProfileModal from "./components/EditProfileModal";
 import AdminLayout from "@/src/AdminScreenLayout/AdminLayout";
 import { settingService } from "@/src/services/settingService";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -37,13 +39,20 @@ export default function ProfilePage() {
             </div>
           ) : (
             <>
-              <ProfileHeader profile={profile} />
+              <ProfileHeader profile={profile} onEdit={() => setIsEditOpen(true)} />
               <PersonalInfo profile={profile} onUpdate={fetchProfile} />
               <AddressInfo profile={profile} onUpdate={fetchProfile} />
             </>
           )}
         </div>
       </div>
+
+      <EditProfileModal
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        profile={profile}
+        onUpdate={fetchProfile}
+      />
     </AdminLayout>
   );
 }

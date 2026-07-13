@@ -28,19 +28,19 @@ export default function TransactionsTable({
 
   const currentTransactions = isCustomerTransactions ? displayData.map(t => ({
     id: t.id,
-    customer: t.customer?.firstName ? `${t.customer.firstName} ${t.customer.lastName}` : (t.customer?.name || t.userName || t.customerName || "N/A"),
-    project: t.project?.title || t.projectTitle || t.projectName || "Marketplace Order",
+    customer: typeof t.customer === "string" ? t.customer : (t.customer?.firstName ? `${t.customer.firstName} ${t.customer.lastName}` : (t.customer?.name || t.userName || t.customerName || "N/A")),
+    project: t.project?.title || t.projectTitle || t.projectName || t.project || "Marketplace Order",
     category: t.category || (t.isProductDesign ? "Product Design" : "General"),
     amount: `₦${t.amount?.toLocaleString() || "0"}`,
-    method: t.paymentMethod || "N/A",
-    date: t.createdAt ? new Date(t.createdAt).toLocaleDateString() : "N/A",
+    method: t.method || t.paymentMethod || "N/A",
+    date: (t.date || t.createdAt) ? new Date(t.date || t.createdAt).toLocaleDateString() : "N/A",
     status: t.status || "Completed"
   })) : [];
 
   const currentPayouts = isAgentPayouts ? displayData.map(p => ({
     id: p.id,
     agent: p.agent?.firstName ? `${p.agent.firstName} ${p.agent.lastName}` : (p.agent?.name || p.agentName || "N/A"),
-    avatar: p.agent?.profilePicture || "https://i.pravatar.cc/100",
+    avatar: p.agent?.profilePicture || null,
     project: p.project?.title || p.projectTitle || p.projectName || "N/A",
     amount: `₦${p.amount?.toLocaleString() || "0"}`,
     status: p.status || "Pending",
@@ -208,13 +208,19 @@ export default function TransactionsTable({
                   </td>
                   <td className="p-3">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-100 border border-gray-200">
-                        <img
-                          src={payout.avatar}
-                          alt={payout.agent}
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
+                      {payout.avatar ? (
+                        <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-100 border border-gray-200">
+                          <img
+                            src={payout.avatar}
+                            alt={payout.agent}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#FFC700] to-orange-400 flex items-center justify-center text-[#1a1a2e] font-bold text-xs shadow-sm flex-shrink-0">
+                          {payout.agent?.charAt(0)?.toUpperCase() || "?"}
+                        </div>
+                      )}
                       <span className="font-semibold text-[#1a1a2e]">
                         {payout.agent}
                       </span>

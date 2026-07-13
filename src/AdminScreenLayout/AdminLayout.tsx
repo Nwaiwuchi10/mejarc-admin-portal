@@ -18,6 +18,8 @@ import {
   ChevronDown,
   Menu,
   X,
+  PanelLeftClose,
+  PanelRightClose,
 } from "lucide-react";
 import logo from "../assets/images/logo.png";
 
@@ -28,13 +30,14 @@ interface AdminLayoutProps {
 const navItems = [
   { label: "Overview", icon: LayoutDashboard, href: "/" },
   { label: "User Management", icon: Users, href: "/admin/users" },
-  { label: "Project Oversight", icon: FolderKanban, href: "/admin/project-oversight" },
-  { label: "Marketplace", icon: ShoppingBag, href: "/admin/marketplace" },
+  // { label: "Project Oversight", icon: FolderKanban, href: "/admin/project-oversight" },
+  { label: "Product & Marketplace", icon: ShoppingBag, href: "/admin/marketplace" },
   { label: "Financials", icon: DollarSign, href: "/admin/financials" },
   { label: "Financial Reports", icon: BarChart2, href: "/admin/financial" },
   { label: "Reports", icon: BarChart2, href: "/admin/reports" },
-  { label: "Communication", icon: MessageCircle, href: "/admin/communication" },
-  { label: "Roles & Permissions", icon: FileText, href: "/admin/roles" },
+  { label: "Contact Messages", icon: MessageCircle, href: "/admin/contact" },
+  // { label: "Communication", icon: MessageCircle, href: "/admin/communication" },
+  // { label: "Roles & Permissions", icon: FileText, href: "/admin/roles" },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
@@ -63,10 +66,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     pathname === "/"
       ? `Good Morning, ${firstName}`
       : navItems.find((item) => pathname === item.href)?.label ||
-        navItems.find((item) => pathname.startsWith(item.href + "/"))?.label ||
-        "Dashboard";
+      navItems.find((item) => pathname.startsWith(item.href + "/"))?.label ||
+      "Dashboard";
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -120,15 +124,24 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <aside
         className={`
           fixed top-0 left-0 h-screen bg-[#1a1a2e] flex flex-col z-[200]
-          transition-transform duration-300 ease-in-out overflow-y-auto overflow-x-hidden
-          w-[200px]
+          transition-all duration-300 ease-in-out overflow-y-auto overflow-x-hidden
+          ${isCollapsed ? "lg:w-[80px]" : "lg:w-[200px]"} w-[200px]
           ${sidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}
           lg:translate-x-0 lg:shadow-none
         `}
       >
-        {/* Logo */}
-        <div className="flex items-center bg-white gap-2 px-5 py-2.5 border-b border-white/10">
-          <Image src={logo} alt="Mejarc Logo" width={100} height={40} priority />
+        {/* Logo and Collapse Toggle */}
+        <div
+          className="flex items-center bg-white gap-2 px-5 py-2.5 border-b border-white/10"
+          style={{ justifyContent: isCollapsed ? 'center' : 'space-between' }}
+        >
+          {!isCollapsed && <Image src={logo} alt="Mejarc Logo" width={100} height={40} priority />}
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="hidden lg:flex p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors border-none bg-transparent cursor-pointer"
+          >
+            {isCollapsed ? <PanelRightClose size={20} /> : <PanelLeftClose size={20} />}
+          </button>
         </div>
 
         {/* Navigation */}
@@ -136,7 +149,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <ul className="flex flex-col gap-1 list-none m-0 p-0">
             {navItems.map(({ label, icon: Icon, href }) => {
               const isActive =
-                href === "/" ? pathname === "/" : pathname.startsWith(href);
+                href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
 
               return (
                 <li key={label}>
@@ -146,18 +159,19 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     className={`
                       flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
                       no-underline transition-all duration-200 cursor-pointer whitespace-nowrap
-                      ${
-                        isActive
-                          ? "bg-[#FFC700] text-[#1a1a2e] font-semibold shadow-md shadow-yellow-400/30"
-                          : "text-gray-300 hover:bg-white/10 hover:text-white"
+                      ${isCollapsed ? "justify-center" : ""}
+                      ${isActive
+                        ? "bg-[#FFC700] text-[#1a1a2e] font-semibold shadow-md shadow-yellow-400/30"
+                        : "text-gray-300 hover:bg-white/10 hover:text-white"
                       }
                     `}
+                    title={isCollapsed ? label : undefined}
                   >
                     <Icon
                       size={18}
                       className={`flex-shrink-0 ${isActive ? "text-[#1a1a2e]" : "text-gray-300"}`}
                     />
-                    {label}
+                    {!isCollapsed && label}
                   </Link>
                 </li>
               );
@@ -166,22 +180,24 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </nav>
 
         {/* Help Center / Inbox Card */}
-        <div className="mx-3 mb-5 bg-[#FFF8E7] rounded-2xl p-4 flex flex-col items-center text-center border border-yellow-200">
-          <div className="w-10 h-10 bg-[#FFC700] rounded-full flex items-center justify-center mb-2.5">
-            <HelpCircle size={20} className="text-white" />
+        {!isCollapsed && (
+          <div className="mx-3 mb-5 bg-[#FFF8E7] rounded-2xl p-4 flex flex-col items-center text-center border border-yellow-200">
+            <div className="w-10 h-10 bg-[#FFC700] rounded-full flex items-center justify-center mb-2.5">
+              <HelpCircle size={20} className="text-white" />
+            </div>
+            <h4 className="text-[13px] font-bold text-[#1a1a2e] m-0 mb-1">Inbox</h4>
+            <p className="text-[11px] text-gray-600 m-0 mb-3 leading-relaxed">
+              Customer queries and project issues
+            </p>
+            <button className="bg-[#FFC700] text-[#1a1a2e] border-none rounded-full py-2 px-4 text-[12px] font-bold w-full cursor-pointer hover:bg-[#e5b300] hover:-translate-y-0.5 transition-all duration-200">
+              See Message
+            </button>
           </div>
-          <h4 className="text-[13px] font-bold text-[#1a1a2e] m-0 mb-1">Inbox</h4>
-          <p className="text-[11px] text-gray-600 m-0 mb-3 leading-relaxed">
-            Customer queries and project issues
-          </p>
-          <button className="bg-[#FFC700] text-[#1a1a2e] border-none rounded-full py-2 px-4 text-[12px] font-bold w-full cursor-pointer hover:bg-[#e5b300] hover:-translate-y-0.5 transition-all duration-200">
-            See Message
-          </button>
-        </div>
+        )}
       </aside>
 
       {/* ── Main Content ── */}
-      <main className="flex-1 flex flex-col min-h-screen w-full max-w-full overflow-x-hidden lg:ml-[200px] bg-[#f5f6fa]">
+      <main className={`flex-1 flex flex-col min-h-screen w-full max-w-full overflow-x-hidden bg-[#f5f6fa] transition-all duration-300 ${isCollapsed ? "lg:ml-[80px]" : "lg:ml-[200px]"}`}>
         {/* ── Topbar ── */}
         <header className="flex items-center justify-between px-6 lg:px-8 py-4 bg-white border-b border-[#e8eaf0] sticky top-0 z-[100]">
           {/* Greeting — offset on mobile for hamburger */}
