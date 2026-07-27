@@ -178,6 +178,19 @@ export default function ContactInquiriesPage() {
                   {selectedInquiry.message}
                 </div>
               </div>
+
+              {selectedInquiry.images && selectedInquiry.images.length > 0 && (
+                <div className="border-t border-gray-100 pt-4 space-y-2">
+                  <span className="text-[10px] text-gray-400 block font-bold uppercase">Attached Pictures</span>
+                  <div className="flex gap-2 flex-wrap pt-1">
+                    {selectedInquiry.images.map((imgUrl: string, idx: number) => (
+                      <a key={idx} href={imgUrl} target="_blank" rel="noopener noreferrer" className="relative w-16 h-16 border rounded-xl overflow-hidden hover:scale-105 transition-all">
+                        <img src={imgUrl} alt={`ref-${idx}`} className="w-full h-full object-cover" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Modal Footer */}

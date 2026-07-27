@@ -353,6 +353,54 @@ export default function MarketTable({
                           </div>
                         )}
                       </div>
+
+                      <div>
+                        <span className="text-xs font-semibold text-gray-500 block mb-1">Electrical Plan File</span>
+                        {modal.data.electricalPlan && modal.data.electricalPlan.length > 0 ? (
+                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200">
+                            <div className="flex items-center gap-2">
+                              <FileText size={18} className="text-green-500" />
+                              <span className="text-xs font-bold text-gray-700 truncate max-w-[180px]">Electrical_Plan.pdf</span>
+                            </div>
+                            <a
+                              href={modal.data.electricalPlan[0]}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-xs font-bold text-green-600 hover:text-green-700 flex items-center gap-1 transition"
+                            >
+                              <Download size={14} /> Open File
+                            </a>
+                          </div>
+                        ) : (
+                          <div className="p-3 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-center text-xs text-gray-400">
+                            No electrical plan submitted
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <span className="text-xs font-semibold text-gray-500 block mb-1">Mechanical Plan File</span>
+                        {modal.data.mechanicalPlan && modal.data.mechanicalPlan.length > 0 ? (
+                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200">
+                            <div className="flex items-center gap-2">
+                              <FileText size={18} className="text-orange-500" />
+                              <span className="text-xs font-bold text-gray-700 truncate max-w-[180px]">Mechanical_Plan.pdf</span>
+                            </div>
+                            <a
+                              href={modal.data.mechanicalPlan[0]}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-xs font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1 transition"
+                            >
+                              <Download size={14} /> Open File
+                            </a>
+                          </div>
+                        ) : (
+                          <div className="p-3 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-center text-xs text-gray-400">
+                            No mechanical plan submitted
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
