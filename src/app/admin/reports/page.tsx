@@ -23,20 +23,37 @@ export default function Reports() {
 
   const fetchData = async () => {
     setLoading(true);
-    const [summaryRes, perfRes, revRes, topRes, actRes] = await Promise.all([
-      reportService.getSummary(),
-      reportService.getPerformance(),
-      reportService.getRevenueChart(),
-      reportService.getTopAgents(),
-      reportService.getCustomerActivity()
-    ]);
+    try {
+      const results = await Promise.allSettled([
+        reportService.getSummary(),
+        reportService.getPerformance(),
+        reportService.getRevenueChart(),
+        reportService.getTopAgents(),
+        reportService.getCustomerActivity(),
+      ]);
 
-    if (summaryRes) setSummary(summaryRes);
-    if (perfRes) setPerformance(perfRes);
-    if (revRes.data) setRevenueData(revRes.data);
-    if (topRes.data) setTopAgents(topRes.data);
-    if (actRes.data) setActivity(actRes.data);
-    setLoading(false);
+      const [summaryRes, perfRes, revRes, topRes, actRes] = results;
+
+      if (summaryRes.status === "fulfilled" && summaryRes.value) {
+        setSummary(summaryRes.value);
+      }
+      if (perfRes.status === "fulfilled" && perfRes.value) {
+        setPerformance(perfRes.value);
+      }
+      if (revRes.status === "fulfilled" && revRes.value?.data) {
+        setRevenueData(revRes.value.data);
+      }
+      if (topRes.status === "fulfilled" && topRes.value?.data) {
+        setTopAgents(topRes.value.data);
+      }
+      if (actRes.status === "fulfilled" && actRes.value?.data) {
+        setActivity(actRes.value.data);
+      }
+    } catch (err) {
+      console.error("Error fetching reports data", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -45,28 +62,32 @@ export default function Reports() {
         <div className="space-y-6 p-4 md:p-6">
           {loading ? (
             <div className="flex items-center justify-center p-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
             </div>
           ) : (
             <>
+              {/* ── 1. Top Financial KPI Summary Cards ── */}
               <div className="w-full overflow-hidden">
                 <StatsCards summary={summary} />
               </div>
 
-              <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-                <div className="xl:col-span-3 min-w-0">
+              {/* ── 2. Performance & Top Agent Row ── */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 min-w-0">
                   <Performance data={performance} />
                 </div>
 
-                <div className="xl:col-span-1 min-w-0">
-                  <RevenueChart data={revenueData} />
-                </div>
-
-                <div className="xl:col-span-3 min-w-0">
+                <div className="lg:col-span-1 min-w-0">
                   <TopAgent agents={topAgents} />
                 </div>
               </div>
 
+              {/* ── 3. Monthly Revenue Analytics Chart ── */}
+              <div className="w-full min-w-0 overflow-hidden">
+                <RevenueChart data={revenueData} />
+              </div>
+
+              {/* ── 4. Customer Activity & Platform Events ── */}
               <div className="w-full min-w-0 overflow-hidden">
                 <CustomerActivity activity={activity} summary={summary} />
               </div>

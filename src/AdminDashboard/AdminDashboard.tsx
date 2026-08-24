@@ -14,7 +14,14 @@ import { financialService } from "../services/financialService";
 import { communicationService } from "../services/communicationService";
 
 export default function AdminDashboard() {
-    const [data, setData] = useState({
+    const [data, setData] = useState<{
+        summary: any;
+        users: any;
+        transactions: any;
+        performance: any;
+        conversations: any;
+        health: any;
+    }>({
         summary: null,
         users: null,
         transactions: null,
@@ -31,7 +38,7 @@ export default function AdminDashboard() {
     const fetchAllData = async () => {
         setLoading(true);
         try {
-            const [summary, users, transactions, performance, conversations, health] = await Promise.all([
+            const results = await Promise.allSettled([
                 reportService.getSummary(),
                 userService.getUsers({ limit: 10 }),
                 financialService.getTransactions({ limit: 5 }),
@@ -40,13 +47,15 @@ export default function AdminDashboard() {
                 reportService.getSystemHealth(),
             ]);
 
+            const [summaryRes, usersRes, transactionsRes, performanceRes, conversationsRes, healthRes] = results;
+
             setData({
-                summary,
-                users,
-                transactions,
-                performance,
-                conversations,
-                health,
+                summary: summaryRes.status === "fulfilled" ? summaryRes.value : null,
+                users: usersRes.status === "fulfilled" ? usersRes.value : null,
+                transactions: transactionsRes.status === "fulfilled" ? transactionsRes.value : null,
+                performance: performanceRes.status === "fulfilled" ? performanceRes.value : null,
+                conversations: conversationsRes.status === "fulfilled" ? conversationsRes.value : null,
+                health: healthRes.status === "fulfilled" ? healthRes.value : null,
             });
         } catch (error) {
             console.error("Error fetching dashboard data:", error);

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Eye } from "lucide-react";
 
 /* ── Types ─────────────────────────────────────────────────────────────── */
@@ -60,9 +61,11 @@ export default function PaymentRequest({ data }: PaymentRequestProps) {
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-base font-bold text-[#1a1a2e] m-0">Recent Transactions</h2>
-                <button className="flex items-center gap-1 text-[12px] text-gray-600 bg-[#FFF8E7] px-2.5 py-1 rounded-full font-medium hover:bg-yellow-100 transition-colors duration-150 cursor-pointer">
-                    View <Eye size={12} className="text-[#FFC700]" />
-                </button>
+                <Link href="/admin/financials" className="no-underline">
+                    <span className="flex items-center gap-1 text-[12px] text-gray-700 bg-[#FFF8E7] px-2.5 py-1 rounded-full font-medium hover:bg-yellow-100 transition-colors duration-150 cursor-pointer select-none">
+                        View <Eye size={12} className="text-[#FFC700]" />
+                    </span>
+                </Link>
             </div>
 
             {/* List */}

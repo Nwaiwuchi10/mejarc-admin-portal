@@ -100,11 +100,10 @@ export default function AgentApplicationsPage() {
       {/* Toast Alert */}
       {toastMsg && (
         <div
-          className={`fixed bottom-6 right-6 z-[200] flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl text-sm font-semibold transition-all animate-in slide-in-from-bottom-4 duration-300 ${
-            toastMsg.type === "success"
+          className={`fixed bottom-6 right-6 z-[200] flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl text-sm font-semibold transition-all animate-in slide-in-from-bottom-4 duration-300 ${toastMsg.type === "success"
               ? "bg-green-600 text-white"
               : "bg-red-600 text-white"
-          }`}
+            }`}
         >
           {toastMsg.type === "success" ? "✓" : "✕"} {toastMsg.text}
         </div>
@@ -116,7 +115,7 @@ export default function AgentApplicationsPage() {
             <h1 className="text-2xl font-bold text-[#1a1a2e]">Agent KYC & Applications</h1>
             <p className="text-sm text-gray-600 mt-1">Review and manage professional agent registrations.</p>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
             <select
               value={businessType}
@@ -124,10 +123,10 @@ export default function AgentApplicationsPage() {
               className="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FFC700] bg-white shadow-sm font-medium pr-8"
             >
               <option value="All">All Categories</option>
-              <option value="Building Designer">Building Designer</option>
+              {/* <option value="Building Designer">Building Designer</option>
               <option value="Interior Designer">Interior Designer</option>
               <option value="Architect">Architect</option>
-              <option value="Structural Engineer">Structural Engineer</option>
+              <option value="Structural Engineer">Structural Engineer</option> */}
             </select>
 
             <div className="relative w-full sm:w-64">
@@ -149,11 +148,10 @@ export default function AgentApplicationsPage() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-3 text-sm font-semibold transition-all relative ${
-                activeTab === tab
+              className={`px-6 py-3 text-sm font-semibold transition-all relative ${activeTab === tab
                   ? "text-[#1a1a2e]"
                   : "text-gray-600 hover:text-gray-600"
-              }`}
+                }`}
             >
               {tab}
               {activeTab === tab && (
@@ -210,11 +208,10 @@ export default function AgentApplicationsPage() {
                         {app.createdAt ? new Date(app.createdAt).toLocaleDateString() : "N/A"}
                       </td>
                       <td className="px-6 py-5">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
-                          app.status === "Approved" ? "bg-green-100 text-green-700" :
-                          app.status === "Rejected" ? "bg-red-100 text-red-700" :
-                          "bg-yellow-100 text-yellow-700"
-                        }`}>
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${app.status === "Approved" ? "bg-green-100 text-green-700" :
+                            app.status === "Rejected" ? "bg-red-100 text-red-700" :
+                              "bg-yellow-100 text-yellow-700"
+                          }`}>
                           {app.status === "Approved" && <CheckCircle size={12} />}
                           {app.status === "Rejected" && <XCircle size={12} />}
                           {app.status === "Pending" && <Clock size={12} />}
@@ -420,9 +417,9 @@ export default function AgentApplicationsPage() {
               {!detailLoading && selectedAgent && (
                 <div className="p-6 border-t border-gray-100 bg-gray-50 flex gap-3">
                   {selectedAgent.registrationStatus === "awaiting_approval" ||
-                  selectedAgent.registrationStatus === "kyc_pending" ||
-                  selectedAgent.registrationStatus === "bio_pending" ||
-                  selectedAgent.registrationStatus === "profile_pending" ? (
+                    selectedAgent.registrationStatus === "kyc_pending" ||
+                    selectedAgent.registrationStatus === "bio_pending" ||
+                    selectedAgent.registrationStatus === "profile_pending" ? (
                     <>
                       <button
                         onClick={() => {
@@ -504,11 +501,10 @@ export default function AgentApplicationsPage() {
                   }
                 }}
                 disabled={actionLoading}
-                className={`flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm text-white transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-1.5 ${
-                  actionModal.type === "approve"
+                className={`flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm text-white transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-1.5 ${actionModal.type === "approve"
                     ? "bg-green-600 hover:bg-green-700"
                     : "bg-red-600 hover:bg-red-700"
-                } ${actionLoading ? "opacity-75 cursor-not-allowed" : ""}`}
+                  } ${actionLoading ? "opacity-75 cursor-not-allowed" : ""}`}
               >
                 {actionLoading ? (
                   <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/src/AdminScreenLayout/AdminLayout";
 import UserTabs from "@/src/app/admin/users/components/UserTabs";
 import UserFilters from "@/src/app/admin/users/components/UserFilters";
@@ -9,14 +10,25 @@ import { userService } from "@/src/services/userService";
 import Link from "next/link";
 import { ClipboardList } from "lucide-react";
 
-export default function UsersPage() {
-  const [activeTab, setActiveTab] = useState("All Users");
+function UsersPageContent() {
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const validTabs = ["All Users", "Customers", "Agents", "Staff"];
+  const initialTab = tabParam && validTabs.includes(tabParam) ? tabParam : "All Users";
+
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [roleFilter, setRoleFilter] = useState("All");
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [meta, setMeta] = useState<any>(null);
+
+  useEffect(() => {
+    if (tabParam && validTabs.includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
 
   useEffect(() => {
     fetchUsers();
@@ -102,5 +114,19 @@ export default function UsersPage() {
 
       </div>
     </AdminLayout>
+  );
+}
+
+export default function UsersPage() {
+  return (
+    <Suspense fallback={
+      <AdminLayout>
+        <div className="flex items-center justify-center p-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        </div>
+      </AdminLayout>
+    }>
+      <UsersPageContent />
+    </Suspense>
   );
 }

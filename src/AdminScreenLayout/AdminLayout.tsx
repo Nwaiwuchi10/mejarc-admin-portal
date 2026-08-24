@@ -20,6 +20,7 @@ import {
   X,
   PanelLeftClose,
   PanelRightClose,
+  Sliders,
 } from "lucide-react";
 import logo from "../assets/images/logo.png";
 
@@ -33,6 +34,7 @@ const navItems = [
   // { label: "Project Oversight", icon: FolderKanban, href: "/admin/project-oversight" },
   { label: "Product & Marketplace", icon: ShoppingBag, href: "/admin/marketplace" },
   { label: "Financials", icon: DollarSign, href: "/admin/financials" },
+  { label: "Financial Settings", icon: Sliders, href: "/admin/financial-settings" },
   { label: "Financial Reports", icon: BarChart2, href: "/admin/financial" },
   { label: "Reports", icon: BarChart2, href: "/admin/reports" },
   { label: "Contact Messages", icon: MessageCircle, href: "/admin/contact" },
@@ -152,26 +154,30 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
 
               return (
-                <li key={label}>
+                <li key={label} className="min-w-0">
                   <Link
                     href={href}
                     onClick={closeSidebar}
                     className={`
                       flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                      no-underline transition-all duration-200 cursor-pointer whitespace-nowrap
+                      no-underline transition-all duration-200 cursor-pointer min-w-0
                       ${isCollapsed ? "justify-center" : ""}
                       ${isActive
                         ? "bg-[#FFC700] text-[#1a1a2e] font-semibold shadow-md shadow-yellow-400/30"
                         : "text-gray-300 hover:bg-white/10 hover:text-white"
                       }
                     `}
-                    title={isCollapsed ? label : undefined}
+                    title={label}
                   >
                     <Icon
                       size={18}
                       className={`flex-shrink-0 ${isActive ? "text-[#1a1a2e]" : "text-gray-300"}`}
                     />
-                    {!isCollapsed && label}
+                    {!isCollapsed && (
+                      <span className="truncate flex-1 text-left select-none">
+                        {label}
+                      </span>
+                    )}
                   </Link>
                 </li>
               );
@@ -181,17 +187,22 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Help Center / Inbox Card */}
         {!isCollapsed && (
-          <div className="mx-3 mb-5 bg-[#FFF8E7] rounded-2xl p-4 flex flex-col items-center text-center border border-yellow-200">
-            <div className="w-10 h-10 bg-[#FFC700] rounded-full flex items-center justify-center mb-2.5">
+          <div className="mx-3 mb-5 bg-[#FFF8E7] rounded-2xl p-4 flex flex-col items-center text-center border border-yellow-200 min-w-0">
+            <div className="w-10 h-10 bg-[#FFC700] rounded-full flex items-center justify-center mb-2.5 flex-shrink-0">
               <HelpCircle size={20} className="text-white" />
             </div>
-            <h4 className="text-[13px] font-bold text-[#1a1a2e] m-0 mb-1">Inbox</h4>
-            <p className="text-[11px] text-gray-600 m-0 mb-3 leading-relaxed">
+            <h4 className="text-[13px] font-bold text-[#1a1a2e] m-0 mb-1 truncate w-full" title="Inbox">
+              Inbox
+            </h4>
+            <p className="text-[11px] text-gray-600 m-0 mb-3 leading-relaxed line-clamp-2 w-full">
               Customer queries and project issues
             </p>
-            <button className="bg-[#FFC700] text-[#1a1a2e] border-none rounded-full py-2 px-4 text-[12px] font-bold w-full cursor-pointer hover:bg-[#e5b300] hover:-translate-y-0.5 transition-all duration-200">
-              See Message
-            </button>
+            <Link
+              href="/admin/messages"
+              className="bg-[#FFC700] text-[#1a1a2e] border-none rounded-full py-2 px-4 text-[12px] font-bold w-full cursor-pointer hover:bg-[#e5b300] hover:-translate-y-0.5 transition-all duration-200 truncate no-underline block text-center select-none"
+            >
+              See Messages
+            </Link>
           </div>
         )}
       </aside>
@@ -206,11 +217,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </h1>
 
           <div className="flex items-center gap-3 lg:gap-4">
-            {/* Bell */}
-            <div className="relative cursor-pointer text-gray-600 flex items-center">
+            {/* Bell / Notifications */}
+            <Link
+              href="/admin/notifications"
+              className="relative cursor-pointer text-gray-600 hover:text-[#1a1a2e] flex items-center p-1.5 rounded-xl hover:bg-gray-100 transition-colors no-underline"
+              title="Notifications"
+            >
               <Bell size={22} />
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full border border-white" />
-            </div>
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-white animate-pulse" />
+            </Link>
 
             {/* User */}
             <div className="relative" ref={dropdownRef}>

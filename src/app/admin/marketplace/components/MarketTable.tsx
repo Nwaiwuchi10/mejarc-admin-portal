@@ -305,102 +305,73 @@ export default function MarketTable({
                   {/* S3 Documents / Uploads */}
                   <div className="space-y-3 border-t border-gray-100 pt-6">
                     <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider">Submitted Blueprint & Design Documents</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <span className="text-xs font-semibold text-gray-500 block mb-1">Architectural Plan File</span>
-                        {modal.data.architecturalPlan && modal.data.architecturalPlan.length > 0 ? (
-                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200">
-                            <div className="flex items-center gap-2">
-                              <FileText size={18} className="text-blue-500" />
-                              <span className="text-xs font-bold text-gray-700 truncate max-w-[180px]">Architectural_Plan.pdf</span>
-                            </div>
-                            <a
-                              href={modal.data.architecturalPlan[0]}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition"
-                            >
-                              <Download size={14} /> Open File
-                            </a>
-                          </div>
-                        ) : (
-                          <div className="p-3 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-center text-xs text-gray-400">
-                            No architectural plan submitted
-                          </div>
-                        )}
-                      </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {(() => {
+                        const parseUrls = (field: any): string[] => {
+                          if (Array.isArray(field)) return field.filter(Boolean);
+                          if (typeof field === 'string' && field.trim().length > 0) {
+                            return field.includes(',') ? field.split(',').map((s: string) => s.trim()).filter(Boolean) : [field.trim()];
+                          }
+                          return [];
+                        };
 
-                      <div>
-                        <span className="text-xs font-semibold text-gray-500 block mb-1">Structural Plan File</span>
-                        {modal.data.structuralPlan && modal.data.structuralPlan.length > 0 ? (
-                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200">
-                            <div className="flex items-center gap-2">
-                              <FileText size={18} className="text-purple-500" />
-                              <span className="text-xs font-bold text-gray-700 truncate max-w-[180px]">Structural_Plan.pdf</span>
-                            </div>
-                            <a
-                              href={modal.data.structuralPlan[0]}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-xs font-bold text-purple-600 hover:text-purple-700 flex items-center gap-1 transition"
-                            >
-                              <Download size={14} /> Open File
-                            </a>
-                          </div>
-                        ) : (
-                          <div className="p-3 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-center text-xs text-gray-400">
-                            No structural plan submitted
-                          </div>
-                        )}
-                      </div>
+                        const categories = [
+                          { label: "Architectural Plan", files: parseUrls(modal.data.architecturalPlan), color: "text-blue-500", badgeColor: "bg-blue-100 text-blue-800" },
+                          { label: "Structural Plan", files: parseUrls(modal.data.structuralPlan), color: "text-purple-500", badgeColor: "bg-purple-100 text-purple-800" },
+                          { label: "Electrical Plan", files: parseUrls(modal.data.electricalPlan), color: "text-green-500", badgeColor: "bg-green-100 text-green-800" },
+                          { label: "Mechanical Plan", files: parseUrls(modal.data.mechanicalPlan), color: "text-orange-500", badgeColor: "bg-orange-100 text-orange-800" },
+                        ];
 
-                      <div>
-                        <span className="text-xs font-semibold text-gray-500 block mb-1">Electrical Plan File</span>
-                        {modal.data.electricalPlan && modal.data.electricalPlan.length > 0 ? (
-                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200">
-                            <div className="flex items-center gap-2">
-                              <FileText size={18} className="text-green-500" />
-                              <span className="text-xs font-bold text-gray-700 truncate max-w-[180px]">Electrical_Plan.pdf</span>
+                        return categories.map((cat) => (
+                          <div key={cat.label} className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-semibold text-gray-500 block">{cat.label}</span>
+                              {cat.files.length > 0 && (
+                                <span className="text-[10px] font-bold text-gray-400">({cat.files.length} file{cat.files.length > 1 ? 's' : ''})</span>
+                              )}
                             </div>
-                            <a
-                              href={modal.data.electricalPlan[0]}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-xs font-bold text-green-600 hover:text-green-700 flex items-center gap-1 transition"
-                            >
-                              <Download size={14} /> Open File
-                            </a>
-                          </div>
-                        ) : (
-                          <div className="p-3 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-center text-xs text-gray-400">
-                            No electrical plan submitted
-                          </div>
-                        )}
-                      </div>
 
-                      <div>
-                        <span className="text-xs font-semibold text-gray-500 block mb-1">Mechanical Plan File</span>
-                        {modal.data.mechanicalPlan && modal.data.mechanicalPlan.length > 0 ? (
-                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200">
-                            <div className="flex items-center gap-2">
-                              <FileText size={18} className="text-orange-500" />
-                              <span className="text-xs font-bold text-gray-700 truncate max-w-[180px]">Mechanical_Plan.pdf</span>
-                            </div>
-                            <a
-                              href={modal.data.mechanicalPlan[0]}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-xs font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1 transition"
-                            >
-                              <Download size={14} /> Open File
-                            </a>
+                            {cat.files.length > 0 ? (
+                              <div className="space-y-2">
+                                {cat.files.map((url, idx) => {
+                                  const fileName = decodeURIComponent(url.split('/').pop()?.split('?')[0] || `File-${idx + 1}`);
+                                  const ext = fileName.split('.').pop()?.toUpperCase() || 'FILE';
+                                  return (
+                                    <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200">
+                                      <div className="flex items-center gap-2 min-w-0 pr-2">
+                                        <FileText size={18} className={`${cat.color} shrink-0`} />
+                                        <div className="min-w-0">
+                                          <div className="flex items-center gap-1.5">
+                                            <span className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded ${cat.badgeColor} shrink-0`}>
+                                              {ext}
+                                            </span>
+                                            <span className="text-xs font-bold text-gray-700 truncate max-w-[160px] block" title={fileName}>
+                                              {fileName}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <a
+                                        href={url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        download={fileName}
+                                        className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition shrink-0 ml-2"
+                                      >
+                                        <Download size={14} /> Open
+                                      </a>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <div className="p-3 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-center text-xs text-gray-400">
+                                No {cat.label.toLowerCase()} submitted
+                              </div>
+                            )}
                           </div>
-                        ) : (
-                          <div className="p-3 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-center text-xs text-gray-400">
-                            No mechanical plan submitted
-                          </div>
-                        )}
-                      </div>
+                        ));
+                      })()}
                     </div>
                   </div>
 

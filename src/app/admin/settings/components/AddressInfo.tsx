@@ -14,10 +14,10 @@ export default function AddressInfo({ profile }: AddressInfoProps) {
       </h3>
 
       <div className="divide-y">
-        <InfoRow label="Country" value={profile?.country || "N/A"} />
-        <InfoRow label="City" value={profile?.city || "N/A"} />
-        <InfoRow label="State" value={profile?.state || "N/A"} />
-        <InfoRow label="Postal Code" value={profile?.postalCode || "N/A"} />
+        <InfoRow label="Street" value={profile?.address?.street || profile?.street || (typeof profile?.address === "string" ? profile.address : "N/A")} />
+        <InfoRow label="City" value={profile?.address?.city || profile?.city || "N/A"} />
+        <InfoRow label="State" value={profile?.address?.state || profile?.state || "N/A"} />
+        <InfoRow label="Country" value={profile?.address?.country || profile?.country || "N/A"} />
       </div>
     </div>
   );

@@ -125,5 +125,74 @@ export const financialService = {
         message: error.response?.data?.message || "Failed to retry withdrawal",
       };
     }
-  }
+  },
+
+  getWithdrawalSettings: async () => {
+    try {
+      const response = await Api.get("/wallet/admin/withdrawal-settings");
+      return response.data;
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to fetch withdrawal settings",
+        mode: "AUTO",
+        autoApproveThreshold: 100000,
+        minWithdrawalAmount: 1000,
+        maxWithdrawalAmount: 5000000,
+      };
+    }
+  },
+
+  updateWithdrawalSettings: async (data: {
+    mode?: "AUTO" | "MANUAL";
+    autoApproveThreshold?: number;
+    minWithdrawalAmount?: number;
+    maxWithdrawalAmount?: number;
+  }) => {
+    try {
+      const response = await Api.patch("/wallet/admin/withdrawal-settings", data);
+      return response.data;
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to update withdrawal settings",
+      };
+    }
+  },
+
+  approveWithdrawal: async (id: string, adminNotes?: string) => {
+    try {
+      const response = await Api.post(`/wallet/admin/withdrawals/${id}/approve`, { adminNotes });
+      return response.data;
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to approve withdrawal",
+      };
+    }
+  },
+
+  rejectWithdrawal: async (id: string, reason: string) => {
+    try {
+      const response = await Api.post(`/wallet/admin/withdrawals/${id}/reject`, { reason });
+      return response.data;
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to reject withdrawal",
+      };
+    }
+  },
+
+  getAllWithdrawals: async () => {
+    try {
+      const response = await Api.get("/wallet/admin/withdrawals");
+      return response.data;
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to fetch withdrawals",
+      };
+    }
+  },
 };

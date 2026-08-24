@@ -26,7 +26,13 @@ export default function ProfileHeader({ profile, onEdit }: ProfileHeaderProps) {
           </h2>
           <p className="text-sm text-gray-600">{profile?.adminRole || "Super Admin"}</p>
           <p className="text-xs text-gray-600">
-            {profile?.address || "Shapati Ibeju Lekki Lagos"}
+            {typeof profile?.address === "string"
+              ? profile.address
+              : profile?.address
+              ? [profile.address.street, profile.address.city, profile.address.state, profile.address.country]
+                  .filter(Boolean)
+                  .join(", ")
+              : "Lagos, Nigeria"}
           </p>
         </div>
       </div>

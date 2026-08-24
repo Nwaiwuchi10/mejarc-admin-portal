@@ -1,244 +1,113 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
+import { BarChart3 } from "lucide-react";
 
 interface RevenueChartProps {
   data?: any[];
 }
 
 export default function RevenueChart({ data: propData }: RevenueChartProps) {
-  const chartData = propData && propData.length > 0 ? propData : [];
+  const chartData = Array.isArray(propData) && propData.length > 0 ? propData : [];
   
-  if (chartData.length === 0) {
-    return (
-      <div className="bg-white p-5 rounded-xl shadow-sm xl:col-span-2 relative overflow-hidden flex flex-col justify-center items-center py-20">
-        <p className="text-gray-400 font-semibold text-sm">No revenue data available</p>
-      </div>
-    );
-  }
+  const currentMonthLabel = new Date().toLocaleString("default", { month: "short" }).toUpperCase();
+  const values = chartData.map((item) => Number(item.revenue || item.value || 0));
+  const rawMax = Math.max(...values, 0);
+  const maxValue = rawMax > 0 ? rawMax * 1.15 : 100000; // 15% headroom
 
-  const maxValue = Math.max(...chartData.map(item => item.revenue || item.value || 0), 1000);
-  const intervals = Array.from({ length: 6 }, (_, i) => Math.round(maxValue - (maxValue / 5) * i));
+  const intervals = [
+    maxValue,
+    maxValue * 0.75,
+    maxValue * 0.5,
+    maxValue * 0.25,
+    0,
+  ];
 
-  const [showFilter, setShowFilter] = useState(false);
-
-  const currentMonthLabel = new Date().toLocaleString('default', { month: 'short' }).toUpperCase();
+  const formatShort = (val: number) => {
+    if (val >= 1_000_000) return `₦${(val / 1_000_000).toFixed(1)}M`;
+    if (val >= 1_000) return `₦${(val / 1_000).toFixed(0)}K`;
+    return `₦${Math.round(val)}`;
+  };
 
   return (
-    <div className="bg-white p-5 rounded-xl shadow-sm xl:col-span-2 relative overflow-hidden">
-
+    <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden h-full flex flex-col justify-between">
       {/* HEADER */}
-      <div className="mb-8 flex items-center justify-between gap-3">
-
-        <div>
-          <h3 className="text-base font-semibold text-[#1a1a2e]">
-            Revenue Analytics
-          </h3>
-
-          <p className="mt-1 text-xs text-gray-600">
-            Revenue trends across recent months
-          </p>
+      <div className="flex items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-[#FFF8E7] flex items-center justify-center text-[#FFC700]">
+            <BarChart3 size={16} />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-[#1a1a2e] m-0">
+              Revenue Analytics
+            </h3>
+            <p className="mt-0.5 text-xs text-gray-500 m-0">
+              Monthly revenue distribution from real orders
+            </p>
+          </div>
         </div>
 
-        <button
-          onClick={() => setShowFilter((prev) => !prev)}
-          className="
-            rounded-lg
-            bg-gray-100
-            px-3
-            py-2
-            text-xs
-            font-medium
-            text-[#1a1a2e]
-            transition
-            hover:bg-gray-200
-          "
-        >
-          This Month
-        </button>
-
+        <span className="text-xs font-semibold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full">
+          Past 6 Months
+        </span>
       </div>
 
-      {/* FILTER */}
-      {showFilter && (
-        <div
-          className="
-            absolute
-            right-0
-            top-14
-            z-50
-            w-[280px]
-            max-w-[90vw]
-            rounded-2xl
-            border
-            border-gray-200
-            bg-white
-            p-4
-            shadow-xl
-          "
-        >
+      {chartData.length === 0 ? (
+        <div className="py-20 flex flex-col justify-center items-center text-center">
+          <p className="text-gray-400 font-medium text-sm m-0">No order revenue data recorded</p>
+          <p className="text-gray-400 text-xs mt-1">Paid customer transactions will appear here</p>
+        </div>
+      ) : (
+        /* CHART CONTAINER */
+        <div className="w-full overflow-x-auto">
+          <div className="flex min-w-[340px] gap-3">
+            {/* Y AXIS LABELS */}
+            <div className="flex h-56 flex-col justify-between pb-6 text-[11px] font-medium text-gray-400 w-14 text-right pr-2">
+              {intervals.map((val, idx) => (
+                <span key={idx}>{formatShort(val)}</span>
+              ))}
+            </div>
 
-          <div className="mb-2 flex justify-between text-xs text-gray-600">
-            <span>Start Date</span>
-            <span>End Date</span>
+            {/* BARS AREA */}
+            <div className="flex h-56 flex-1 items-end justify-between gap-2 sm:gap-4 border-b border-l border-gray-100 px-3 pb-6">
+              {chartData.map((item: any, idx: number) => {
+                const chartHeight = 170;
+                const val = Number(item.revenue || item.value || 0);
+                const heightPx = maxValue > 0 ? (val / maxValue) * chartHeight : 4;
+                const finalHeight = Math.max(heightPx, 6);
+                const isCurrentMonth = item.month?.toUpperCase() === currentMonthLabel;
+
+                return (
+                  <div
+                    key={item.month || idx}
+                    className="flex flex-1 flex-col items-center justify-end gap-2 group relative"
+                  >
+                    {/* Tooltip on hover */}
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 bg-[#1a1a2e] text-white text-[10px] py-1 px-2 rounded-md shadow-lg pointer-events-none whitespace-nowrap z-20">
+                      ₦{val.toLocaleString()} {item.orderCount ? `(${item.orderCount} orders)` : ""}
+                    </div>
+
+                    <div
+                      className={`w-full max-w-[36px] rounded-t-lg transition-all duration-500 ${
+                        isCurrentMonth
+                          ? "bg-gradient-to-t from-[#FFC700] to-yellow-400 shadow-sm"
+                          : val > 0
+                          ? "bg-gradient-to-t from-gray-300 to-gray-400"
+                          : "bg-gray-100"
+                      }`}
+                      style={{ height: `${finalHeight}px` }}
+                    />
+
+                    <span className={`text-[11px] font-semibold ${isCurrentMonth ? "text-[#1a1a2e]" : "text-gray-500"}`}>
+                      {item.month}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-
-          <div className="mb-4 flex gap-2">
-            <input
-              type="date"
-              className="
-                w-1/2
-                rounded-lg
-                border
-                border-gray-200
-                bg-gray-50
-                p-2
-                text-sm
-                outline-none
-              "
-            />
-
-            <input
-              type="date"
-              className="
-                w-1/2
-                rounded-lg
-                border
-                border-gray-200
-                bg-gray-50
-                p-2
-                text-sm
-                outline-none
-              "
-            />
-          </div>
-
-          <div className="space-y-2">
-            {["Today", "Yesterday", "This Month", "Last Month"].map(
-              (item) => (
-                <button
-                  key={item}
-                  className={`
-                    w-full
-                    rounded-lg
-                    py-2.5
-                    text-sm
-                    font-medium
-                    transition
-                    ${
-                      item === "This Month"
-                        ? "bg-[#1a1a2e] text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }
-                  `}
-                >
-                  {item}
-                </button>
-              )
-            )}
-          </div>
-
         </div>
       )}
-
-      {/* CHART */}
-      <div className="w-full overflow-x-auto">
-
-        <div className="flex min-w-[500px] gap-6">
-
-          {/* Y AXIS */}
-          <div className="
-            flex
-            h-72
-            flex-col
-            justify-between
-            pb-8
-            text-xs
-            font-medium
-            text-gray-600
-            w-16
-            text-right
-            pr-2
-          ">
-            {intervals.map((val, idx) => (
-              <span key={idx}>
-                ₦{val >= 1000000 ? `${(val / 1000000).toFixed(1)}M` : val >= 1000 ? `${(val / 1000).toFixed(0)}K` : val}
-              </span>
-            ))}
-          </div>
-
-          {/* BARS */}
-          <div className="
-            flex
-            h-72
-            flex-1
-            items-end
-            justify-between
-            gap-4
-            border-b
-            border-l
-            border-gray-100
-            px-4
-            pb-8
-          ">
-            {chartData.map((item: any) => {
-              const chartHeight = 220;
-              const val = item.revenue || item.value || 0;
-              const heightPx =
-                (val / maxValue) * chartHeight;
-
-              const finalHeight = Math.max(heightPx, 8);
-
-              const isActive = item.month?.toUpperCase() === currentMonthLabel;
-
-              return (
-                <div
-                  key={item.month}
-                  className="
-                    flex
-                    flex-1
-                    flex-col
-                    items-center
-                    justify-end
-                    gap-3
-                  "
-                >
-
-                  <div
-                    className={`
-                      w-full
-                      max-w-[48px]
-                      rounded-t-xl
-                      transition-all
-                      duration-300
-                      ${
-                        isActive
-                          ? "bg-yellow-400"
-                          : "bg-gray-200"
-                      }
-                    `}
-                    style={{
-                      height: `${finalHeight}px`,
-                    }}
-                  />
-
-                  <span className="
-                    text-xs
-                    font-medium
-                    text-gray-600
-                  ">
-                    {item.month}
-                  </span>
-
-                </div>
-              );
-            })}
-          </div>
-
-        </div>
-
-      </div>
-
     </div>
   );
 }
